@@ -90,7 +90,7 @@ Well, almost.  Make sure you also have the following set:
         ```
 
 
-## Where to find your API Keys:
+## Where to find your API Keys
 
 **HockeyApp**: Click your name in top right -> API Tokens -> Create an API token. _(permissions can be set to "Read Only")_
 
