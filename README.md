@@ -1,6 +1,6 @@
 # foam
 
-_Library to quickly and easily add support for multiple DevOps tools to mobile apps._
+_Library to quickly and easily add support for multiple dev tools to mobile apps._
 
 You have a small team.  Setting up crash reporting tools, event tracking tools, and log management services
 is not what you want to spend your hours doing.  You know these are important to the health of your application,
