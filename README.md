@@ -63,29 +63,21 @@ That's it.  You've just enabled all of these services for your application.  Wel
 
 1. Internet permission in your `AndroidManifest.xml`:
 
-        ```xml
-            <uses-permission android:name="android.permission.INTERNET" />
-        ```
-
+        <uses-permission android:name="android.permission.INTERNET" />
+        
 2. At least min API level 14 in `build.gradle`:
 
-        ```groovy
-            minSdkVersion 14
-        ```
+        minSdkVersion 14
 
 3. Define your custom Application class in your `AndroidManifest.xml`:
 
-        ```xml
-            <application
-                android:name="com.your.app.MyApplication"
-        ```
+        <application
+            android:name="com.your.app.MyApplication"
 
 4. Dependencies for Retrofit & Gson in `build.gradle`:
 
-        ```groovy
-            compile 'com.squareup.retrofit:retrofit:1.9.0'
-            compile 'com.google.code.gson:gson:2.3'
-        ```
+        compile 'com.squareup.retrofit:retrofit:1.9.0'
+        compile 'com.google.code.gson:gson:2.3'
 
 
 ## Where to find your API Keys:
@@ -113,12 +105,12 @@ That's it.  You've just enabled all of these services for your application.  Wel
 
 **Why no Crashlytics?**
 
-  We had it.  Then we removed it.
-  Crashlytics requires some (https://crashlytics.com/downloads)[custom setup].  There is no way around this.
-  After which, enabling crashlytics is a single line of code `Crashlytics.start(this)`.
-  This tool would not lessen setup, configuration, or required coding coding as it does with the other services we support.
-  If Crashlytics were to ever support manual configuration or provide an API to submit crashes, we will add it.
-  In the meantime, if you with to use Crashlytics in your application, instructions can be found (https://crashlytics.com/downloads)[here].
+  We had it.  Then we removed it.  
+  Crashlytics requires some [custom setup](https://crashlytics.com/downloads).  There is no way around this.  
+  After which, enabling crashlytics is a single line of code `Crashlytics.start(this)`.  
+  This tool would not lessen setup, configuration, or required coding coding as it does with the other services we support.  
+  If Crashlytics were to ever support manual configuration or provide an API to submit crashes, we will add it.  
+  In the meantime, if you wish to use Crashlytics in your application, instructions can be found [here](https://crashlytics.com/downloads).
 
 
 ## TODO
