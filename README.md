@@ -115,6 +115,7 @@ That's it.  You've just enabled all of these services for your application.  Wel
 
 ## TODO
 
+**iOS version:** Coming soon
 **Services to add:** Loggly
 
 

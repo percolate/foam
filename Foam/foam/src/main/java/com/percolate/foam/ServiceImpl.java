@@ -3,10 +3,7 @@ package com.percolate.foam;
 import android.content.Context;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * Service Object.  Represents a service to which we will send data.
  */
 abstract class ServiceImpl implements Service {
 

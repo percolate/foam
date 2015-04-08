@@ -3,10 +3,7 @@ package com.percolate.foam;
 import java.io.Serializable;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * DTO style object that will be persisted to/from local storage.
  */
 class StoredException implements Serializable {
 
@@ -17,6 +14,7 @@ class StoredException implements Serializable {
     protected String threadName;
     protected String stackTrace;
 
+    @SuppressWarnings("unused")
     StoredException(){
     }
 

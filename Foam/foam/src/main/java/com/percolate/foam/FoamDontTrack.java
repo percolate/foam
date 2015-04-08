@@ -6,12 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
- *
- * Can be added to the class, the onResume, or the onCreate() method.  All have the same effect.
+ * Add this annotation to a class or method to not track events on the class.
+ * Can be added to the class, onResume(), or onCreate().  All have the same effect.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

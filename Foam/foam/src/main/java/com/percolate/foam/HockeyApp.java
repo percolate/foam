@@ -38,21 +38,33 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
         super(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void enable(String apiKey) {
         this.apiKey = apiKey;
    }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isEnabled() {
         return apiKey != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ServiceType getServiceType() {
         return ServiceType.HOCKEYAPP;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void logEvent(final StoredException storedException, final Callback<Object> deleteStoredExceptionCallback) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://rink.hockeyapp.net")
@@ -97,6 +109,15 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
         return hockeyAppApplicationId;
     }
 
+    /**
+     * HockeyApp requires data to be in files uploaded via multipart POST request.
+     * Here we create a file containing the log data.
+     * @param appId HockeyApp application ID
+     * @param service Instance of our Retrofit HockeyAppService.
+     * @param storedException Data to place in a log file.
+     * @param deleteStoredExceptionCallback Retrofit callback that will delete the exception file
+     *                                      after it is uploaded.
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void createLogEvent(String appId, HockeyAppService service,
                                 StoredException storedException,
@@ -148,6 +169,9 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
         return logFile;
     }
 
+    /**
+     * Retrofit service
+     */
     private interface HockeyAppService {
 
         @GET("/api/2/apps")
@@ -164,10 +188,16 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
 
     }
 
+    /**
+     * Object representation of JSON returned from HockeyApp
+     */
     private class HockeyAppsDTO {
         List<HockeyAppDTO> apps;
     }
 
+    /**
+     * Object representation of JSON returned from HockeyApp
+     */
     @SuppressWarnings("UnusedDeclaration")
     private class HockeyAppDTO {
         protected Integer id;

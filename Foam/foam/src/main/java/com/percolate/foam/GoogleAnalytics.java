@@ -36,21 +36,33 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
         super(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void enable(String trackingId) {
         this.trackingId = trackingId;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isEnabled() {
         return trackingId != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ServiceType getServiceType() {
         return ServiceType.GOOGLE_ANALYTICS;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void logEvent(Context context, String activityName){
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://www.google-analytics.com")
@@ -103,6 +115,9 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
         return payload;
     }
 
+    /**
+     * Retrofit Service
+     */
     interface GoogleAnalyticsService {
 
         @POST("/collect")
@@ -111,6 +126,9 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
 
     }
 
+    /**
+     * Custom Retrofit Converter that parses data as simple Strings.
+     */
     static class StringConverter implements Converter {
         @Override
         public Object fromBody(TypedInput typedInput, Type type) throws ConversionException {

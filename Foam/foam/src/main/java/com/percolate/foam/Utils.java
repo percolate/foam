@@ -4,19 +4,24 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
+ * Foam utility methods.
  *
- * @author brent
+ * Some methods were taken from Apache Commons Lang (http://commons.apache.org/proper/commons-lang/)
+ * Copied over to avoid requiring additional dependencies.
  *
- * Utility methods.  Mostly taken from Apache Commons Lang source.
- * Copied over to avoid requiring large dependencies.
  */
 class Utils {
 
+    /**
+     * Checks if a CharSequence is whitespace, empty ("") or null.
+     *
+     * @param cs the CharSequence to check, may be null
+     * @return true if the CharSequence is null, empty or whitespace
+     */
     public static boolean isBlank(final CharSequence cs) {
         int strLen;
         if (cs == null || (strLen = cs.length()) == 0) {
@@ -30,10 +35,23 @@ class Utils {
         return true;
     }
 
+    /**
+     * Checks if a CharSequence is not empty (""), not null and not whitespace only.
+     *
+     * @param cs the CharSequence to check, may be null
+     * @return true if the CharSequence is not empty and not null and not whitespace
+     */
     public static boolean isNotBlank(final CharSequence cs) {
         return !isBlank(cs);
     }
 
+    /**
+     * Trim a given string to maxStringLength if it is over maxStringLength.
+     *
+     * @param str String to trim
+     * @param maxStringLength Max length of string to return
+     * @return str, trimmed to maxStringLength.
+     */
     public static String trimToSize(String str, int maxStringLength) {
         if(str == null)
             return null;
@@ -46,6 +64,13 @@ class Utils {
         return str;
     }
 
+    /**
+     * Foam error logging.  Log a warning message using the TAG "Foam".  Include stacktrace of
+     * a Throwable, if provided.
+     *
+     * @param message Message to log
+     * @param ex Optional Throwable.  Stacktrace will be printed if provided.
+     */
     public static void logIssue(String message, Throwable ex){
         if(ex != null) {
             Log.w("Foam", "Foam library: problem detected: " + message, ex);
@@ -54,11 +79,23 @@ class Utils {
         }
     }
 
+    /**
+     * Get application "label" value from Manifest.
+     *
+     * @param context Context
+     * @return Application label from Manifest
+     */
     public static String getApplicationName(Context context) {
         int stringId = context.getApplicationInfo().labelRes;
         return context.getString(stringId);
     }
 
+    /**
+     * Get versionName value from Manifest.
+     *
+     * @param context Context
+     * @return Application versionName from Manifest
+     */
     public static String getVersionName(Context context) {
         String versionName;
         try {
@@ -69,6 +106,12 @@ class Utils {
         return versionName;
     }
 
+    /**
+     * Get versionCode value from Manifest.
+     *
+     * @param context Context
+     * @return Application versionCode from Manifest
+     */
     public static int getVersionCode(Context context) {
         int versionCode;
         try {
@@ -80,7 +123,10 @@ class Utils {
     }
 
     /**
-     * Get package name from the manifest.
+     * Get package name from Manifest.
+     *
+     * @param context Context
+     * @return Application package from Manifest
      */
     public static String getApplicationPackageName(Context context) {
         String packageName = "";
@@ -96,8 +142,11 @@ class Utils {
 
     /**
      * Get ANDROID_ID, which is unique to the device + user combo.  Can sometimes be null in theory.
+     *
+     * @param context Context
+     * @return Unique User+Device identifier.  Will never be null.  Can be blank.
      */
-    public static String getAndroidId(Context context) {
+    public static @NonNull String getAndroidId(Context context) {
         String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         if(androidId == null){
             return "";
@@ -105,4 +154,5 @@ class Utils {
             return androidId;
         }
     }
+
 }

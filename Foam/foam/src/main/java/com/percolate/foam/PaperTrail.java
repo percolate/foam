@@ -3,10 +3,7 @@ package com.percolate.foam;
 import android.content.Context;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * {@inheritDoc}
  */
 class PaperTrail extends UDPLoggingService {
 
@@ -14,6 +11,9 @@ class PaperTrail extends UDPLoggingService {
         super(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ServiceType getServiceType() {
         return ServiceType.PAPERTRAIL;

@@ -1,13 +1,13 @@
 package com.percolate.foam;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * Interface required for <code>Application</code> classes to implement in order to use Foam.
  */
 public interface FoamApp {
 
+    /**
+     * Return stored instance of {@link FoamMain}.
+     */
     FoamMain getFoamMain();
 
 }

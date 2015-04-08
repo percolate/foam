@@ -1,10 +1,7 @@
 package com.percolate.foam;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * Enum of services currently supported by Foam
  */
 enum ServiceType {
     PAGERDUTY,

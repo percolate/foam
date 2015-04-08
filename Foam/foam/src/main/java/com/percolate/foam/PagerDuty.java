@@ -10,10 +10,7 @@ import retrofit.http.Body;
 import retrofit.http.POST;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * {@inheritDoc}
  */
 class PagerDuty extends ServiceImpl implements CrashReportingService  {
 
@@ -23,19 +20,31 @@ class PagerDuty extends ServiceImpl implements CrashReportingService  {
         super(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void enable(String apiKey) {
         this.apiKey = apiKey;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isEnabled(){
         return apiKey != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ServiceType getServiceType() {
         return ServiceType.PAGERDUTY;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void logEvent(StoredException storedException, Callback<Object> callback) {
         PagerDutyEvent pagerDutyEvent = createEvent(storedException);
         RestAdapter restAdapter = new RestAdapter.Builder()
@@ -45,11 +54,20 @@ class PagerDuty extends ServiceImpl implements CrashReportingService  {
         service.createEvent(pagerDutyEvent, callback);
     }
 
+    /**
+     * Retrofit service
+     */
     private interface PagerDutyService {
         @POST("/generic/2010-04-15/create_event.json")
         void createEvent(@Body PagerDutyEvent pagerDutyEvent, Callback<Object> callback);
     }
 
+    /**
+     * Convert a StoredException object to a PagerDutyEvent object that can be POSTed to PagerDuty.
+     *
+     * @param storedException Data to convert
+     * @return Populated PagerDutyEvent object.
+     */
     private PagerDutyEvent createEvent(StoredException storedException){
         PagerDutyEvent pagerDutyEvent = new PagerDutyEvent();
         pagerDutyEvent.service_key = apiKey;
@@ -62,6 +80,9 @@ class PagerDuty extends ServiceImpl implements CrashReportingService  {
         return pagerDutyEvent;
     }
 
+    /**
+     * Object that will be POSTed to PagerDuty as JSON.
+     */
     private class PagerDutyEvent {
         protected String service_key;
         protected String event_type;
