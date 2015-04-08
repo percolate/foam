@@ -9,12 +9,7 @@ import java.util.Map;
 import retrofit.Callback;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
- *
- * Custom exception handler.
+ * Foam's custom exception handler.
  *
  * Sets the application exception handler via <code>Thread.setDefaultUncaughtExceptionHandler()</code>.
  *
@@ -22,9 +17,9 @@ import retrofit.Callback;
  * No app permissions are required since it uses internal storage.
  *
  * When the application is restarted, the stored exceptions will be processed (sent to any of the
- * available services that are configured to receve crash data).
+ * available services that are configured to receive crash data).
  *
- * We can't send crash reports immediatly, because that would mean doing network requests when
+ * We can't send crash reports immediately, because that would mean doing network requests when
  * the app is trying to close from the crash.
  *
  * This object will not override other custom exception handlers.  It will chain with them.
@@ -34,8 +29,14 @@ import retrofit.Callback;
 class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     private Context context;
+
+    /* Services that crashes will be reported to */
     private List<CrashReportingService> services;
+
+    /* Object used to store exceptions so they can be sent on next launch */
     private ExceptionPersister exceptionPersister;
+
+    /* ExceptionHandler that was registered before we registered our version */
     private final Thread.UncaughtExceptionHandler defaultHandler;
 
     CustomExceptionHandler(Context context, List<CrashReportingService> crashReportingServices) {
@@ -57,7 +58,9 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
     /**
      * Handle uncaught exceptions.  Thread.UncaughtExceptionHandler interface method.
      * Here, for each service that the user has enabled, we will store a local copy of
-     * all of the crash data.
+     * the crash data.
+     *
+     * {@inheritDoc}
      */
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
@@ -65,6 +68,13 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
         defaultHandler.uncaughtException(thread, ex);
     }
 
+    /**
+     * Create a {@link StoredException} object for the passed in Thread and Throwable.
+     * Use our {@link ExceptionPersister} class to store this data on the device.
+     *
+     * @param thread Thread that generated the exception
+     * @param ex Exception data.
+     */
     private void storeException(Thread thread, Throwable ex) {
         String stackTrace = Utils.trimToSize(Log.getStackTraceString(ex), 1024);
 

@@ -12,18 +12,29 @@ import java.util.Locale;
 import retrofit.Callback;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
+ * Remote syslog style logging service.
  *
- * @author brent
+ * Data is sent over UDP to an endpoint that is expecting logs in syslog format:
+ * "<priority>timestamp orange_link blue_link: message"
+ * Details: http://en.wikipedia.org/wiki/Syslog#Priority
+ *
+ * {@inheritDoc}
  */
 abstract class UDPLoggingService extends ServiceImpl implements CrashReportingService, LoggingService {
 
+    /** UDP logging URL (eg: logs.myserver.com:12345) */
     private String url;
+
+    /** Host portion of {@link #url} */
     private String host;
+
+    /** Port portion of {@link #url} */
     private int port = -1;
 
+    /** syslog style date formatter */
     SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss", Locale.US);
+
+    /** Application name */
     private final String applicationName;
 
     UDPLoggingService(Context context){
@@ -31,6 +42,9 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
         applicationName = Utils.getApplicationName(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void enable(String url) {
         this.url = url;
@@ -44,6 +58,9 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isEnabled() {
         return url != null && host != null && port != -1;
@@ -64,7 +81,7 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
     }
 
     /**
-     * Create properly formated message to send over UDP that acts like a syslog message
+     * Create properly formatted message to send over UDP that acts like a syslog message
      * syslog format: "<priority>timestamp orange_link blue_link: message"
      * Details: http://en.wikipedia.org/wiki/Syslog#Priority
      */
@@ -80,6 +97,14 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
         sendDataOverUDP(syslogMessage, null);
     }
 
+    /**
+     * Attempt to send syslog-style message over UDP using a DatagramSocket.
+     * Errors will be logged but not retried.  UDP is also not guaranteed.
+     *
+     * @param syslogMessage Message to send
+     * @param deleteFileCallback Retrofit Callback.  After data is sent this Callback is executed
+     *                           to delete the file that contained the data that was sent.
+     */
     private void sendDataOverUDP(final String syslogMessage, final DeleteFileCallback deleteFileCallback) {
         new Thread(new Runnable() {
             @Override

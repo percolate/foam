@@ -3,13 +3,14 @@ package com.percolate.foam;
 import android.support.multidex.MultiDexApplication;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * Application class to extend when using Foam if your application needs to also extend
+ * MultiDexApplication.
  */
 public class FoamMultiDexApplication extends MultiDexApplication implements FoamApp {
 
+    /**
+     * Instance of FoamMain, initialized on launch.
+     */
     private FoamMain foamMain;
 
     @Override
@@ -18,6 +19,9 @@ public class FoamMultiDexApplication extends MultiDexApplication implements Foam
         foamMain = FoamApplicationInit.init(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public FoamMain getFoamMain() {
         return foamMain;

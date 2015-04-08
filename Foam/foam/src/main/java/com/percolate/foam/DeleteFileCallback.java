@@ -7,10 +7,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * Retrofit Callback.  Deletes a given file when network request is successful.
  */
 class DeleteFileCallback implements Callback<Object> {
 
@@ -22,13 +19,23 @@ class DeleteFileCallback implements Callback<Object> {
         this.storedExceptionFileName = storedExceptionFileName;
     }
 
+    /**
+     * Request was successful.  Delete the file stored at <code>storedExceptionFileName</code>
+     */
     @Override
     public void success(Object o, Response response) {
-        context.deleteFile(storedExceptionFileName);
+        try {
+            context.deleteFile(storedExceptionFileName);
+        } catch(Exception ex){
+            Utils.logIssue("Could not ", ex);
+        }
     }
 
+    /**
+     * Request failed.  Log the RetrofitError.
+     */
     @Override
     public void failure(RetrofitError error) {
-        Utils.logIssue("RetrofitError", error);
+        Utils.logIssue("RetrofitError in DeleteFileCallback.  File: [" + storedExceptionFileName + "]", error);
     }
 }

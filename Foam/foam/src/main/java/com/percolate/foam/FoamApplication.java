@@ -3,13 +3,13 @@ package com.percolate.foam;
 import android.app.Application;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * Application class to extend when using Foam.
  */
 public class FoamApplication extends Application implements FoamApp {
 
+    /**
+     * Instance of FoamMain, initialized on launch.
+     */
     private FoamMain foamMain;
 
     @Override
@@ -18,6 +18,9 @@ public class FoamApplication extends Application implements FoamApp {
         foamMain = FoamApplicationInit.init(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public FoamMain getFoamMain() {
         return foamMain;

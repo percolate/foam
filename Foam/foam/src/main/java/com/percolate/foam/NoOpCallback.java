@@ -5,10 +5,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * Retrofit Callback object that does nothing with response data.
  */
 class NoOpCallback implements Callback<Response> {
 

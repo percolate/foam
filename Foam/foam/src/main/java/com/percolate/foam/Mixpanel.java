@@ -15,10 +15,7 @@ import retrofit.http.GET;
 import retrofit.http.Query;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project:
- *
- * @author brent
+ * {@inheritDoc}
  */
 class Mixpanel extends ServiceImpl implements EventTrackingService {
 
@@ -28,21 +25,33 @@ class Mixpanel extends ServiceImpl implements EventTrackingService {
         super(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void enable(String projectToken) {
         this.projectToken = projectToken;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isEnabled() {
         return projectToken != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ServiceType getServiceType() {
         return ServiceType.MIXPANEL;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void logEvent(Context context, String eventName) {
         RestAdapter restAdapter = new RestAdapter.Builder()
@@ -61,17 +70,29 @@ class Mixpanel extends ServiceImpl implements EventTrackingService {
         service.trackEvent(data, new NoOpCallback());
     }
 
+    /**
+     * Convert MixpanelEvent to a base64 string (format expected by Mixpanel).
+     *
+     * @param event Event data to send.
+     * @return Base64 encoded version of the passed in MixpanelEvent DTO.
+     */
     private String eventObjToBase64(MixpanelEvent event) {
         Gson gson = new Gson();
         String json = gson.toJson(event);
         return Base64.encodeToString(json.getBytes(), Base64.DEFAULT);
     }
 
+    /**
+     * Retrofit service
+     */
     private interface MixpanelService{
         @GET("/track/")
         void trackEvent(@Query("data") String data, Callback<Response> callback);
     }
 
+    /**
+     * Data transfer object to send to Mixpanel
+     */
     private class MixpanelEvent {
         String event;
         Map<String, String> properties = new HashMap<String, String>();

@@ -3,10 +3,8 @@ package com.percolate.foam;
 import android.app.Application;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * Logic to startup Foam.  Creates an instance of FoamMain and loads it with keys from
+ * the FoamApiKeys annotation on the passed Application class.
  */
 class FoamApplicationInit {
 
