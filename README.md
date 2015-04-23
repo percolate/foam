@@ -33,7 +33,7 @@ You add your API Keys, we'll do the rest.
 | PagerDuty          | Flurry           | Papertrail     |
 | Papertrail         | Mixpanel         | Logentries     |
 | HockeyApp          | Google Analytics |                |
-| Flurry             |                  |                |
+| Flurry             | Graphite         |                |
 
 
 **Crash Reporting:** Unhandled exceptions will be reported.
@@ -54,6 +54,7 @@ You add your API Keys, we'll do the rest.
         mixpanel = "221b331c441d551e661f771g881h991i",
         googleAnalytics = "UA-00000000-1",
         logentries = "data.logentries.com:12345",
+        graphite = "[api-key@]graphite.myhost.com:2003"
     )
     public class MyApplication extends FoamApplication {
     }
@@ -95,6 +96,8 @@ That's it.  You've just enabled all of these services for your application.  Wel
 **Google Analytics**: Create a new Property -> Select "Mobile App" -> Click "Get Tracking ID".
 
 **Flurry**: Create an application in Flurry then add your application key. _(FlurryAnalytics-x.x.x.jar must be added manually to your project {TODO document in wiki})_
+
+**Graphite**: Provided by the maintainer of your graphite host.
 
 ## Notes:
 

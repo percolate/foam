@@ -43,6 +43,7 @@ class FoamMain {
         services.put(ServiceType.MIXPANEL, new Mixpanel(context));
         services.put(ServiceType.FLURRY, new Flurry(context));
         services.put(ServiceType.GOOGLE_ANALYTICS, new GoogleAnalytics(context));
+        services.put(ServiceType.GRAPHITE, new Graphite(context));
     }
 
     /**
@@ -81,6 +82,8 @@ class FoamMain {
                 if (((Flurry) service).checkForJar()) {
                     apiKey = foamApiKeys.flurry();
                 }
+            } else if(serviceType == ServiceType.GRAPHITE){
+                apiKey = foamApiKeys.graphite();
             }
 
             if(Utils.isNotBlank(apiKey)){
