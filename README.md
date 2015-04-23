@@ -3,24 +3,24 @@ is not what you want to spend your hours doing.  You know these are important to
 but you just want to code.
 
 That's where Foam comes into play.  Want to use Flurry and Papertrail in your app?  No problem:
-```java
-    @FoamApiKeys(
-        flurry = "S6S7S8S9S0S1S2S3S4S5", // API Key
-        papertrail = "logs2.papertrailapp.com:49999" // Server URL
-    )
-    public class MyApplication extends FoamApplication {
-    }
-```
+<pre>
+<b>@FoamApiKeys</b>(
+    <b>flurry</b> = "S6S7S8S9S0S1S2S3S4S5", // API Key
+    <b>papertrail</b> = "logs2.papertrailapp.com:49999" // Server URL
+)
+public class MyApplication extends <b>FoamApplication</b> {
+}
+</pre>
 
 Want to use Google Analytics, PagerDuty, and Logentries?  Sure...
 ```java
-    @FoamApiKeys(
-        googleAnalytics = "UA-00000000-1", // Tracking ID
-        pagerDuty = "3a3b3c3d3e3f3g3h3i3j3k3l3m3n3o3p", // API Key
-        logentries = "data.logentries.com:12345" // Server URL
-    )
-    public class MyApplication extends FoamApplication {
-    }
+@FoamApiKeys(
+    googleAnalytics = "UA-00000000-1", // Tracking ID
+    pagerDuty = "3a3b3c3d3e3f3g3h3i3j3k3l3m3n3o3p", // API Key
+    logentries = "data.logentries.com:12345" // Server URL
+)
+public class MyApplication extends FoamApplication {
+}
 ```
 
 You add your API Keys, we'll do the rest.
@@ -43,18 +43,18 @@ You add your API Keys, we'll do the rest.
 ## Setup All The Things
 
 ```java
-    @FoamApiKeys(
-        pagerDuty = "3a3b3c3d3e3f3g3h3i3j3k3l3m3n3o3p",
-        papertrail = "logs2.papertrailapp.com:49999",
-        hockeyApp = "b2044c3055d4066e5077f6088g7099h8",
-        flurry = "S6S7S8S9S0S1S2S3S4S5"
-        mixpanel = "221b331c441d551e661f771g881h991i",
-        googleAnalytics = "UA-00000000-1",
-        logentries = "data.logentries.com:12345",
-        graphite = "[api-key@]graphite.myhost.com:2003"
-    )
-    public class MyApplication extends FoamApplication {
-    }
+@FoamApiKeys(
+    pagerDuty = "3a3b3c3d3e3f3g3h3i3j3k3l3m3n3o3p",
+    papertrail = "logs2.papertrailapp.com:49999",
+    hockeyApp = "b2044c3055d4066e5077f6088g7099h8",
+    flurry = "S6S7S8S9S0S1S2S3S4S5"
+    mixpanel = "221b331c441d551e661f771g881h991i",
+    googleAnalytics = "UA-00000000-1",
+    logentries = "data.logentries.com:12345",
+    graphite = "[api-key@]graphite.myhost.com:2003"
+)
+public class MyApplication extends FoamApplication {
+}
 ```
 
 That's it.  You've just enabled all of these services for your application.  Well, almost.  Make sure you also have the following set:
@@ -114,8 +114,10 @@ That's it.  You've just enabled all of these services for your application.  Wel
 
 ## TODO
 
-**iOS version:** Coming soon
+**iOS version:** Coming soon  
 **Services to add:** Loggly
+
+If you would like to add a new service please create a pull request.  A good example of what is required is contained in our [Adding Graphite PR]( https://github.com/percolate/foam/pull/3).
 
 ## License
 
