@@ -100,8 +100,8 @@ class FoamMain {
     private void startCustomExceptionHandler() {
         List<CrashReportingService> services = getEnabledServicesForType(CrashReportingService.class);
         if(!services.isEmpty()) {
-            CustomExceptionHandler customerHandler = new CustomExceptionHandler(context, services);
-            customerHandler.start();
+            CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler(context, services, foamApiKeys.wifiOnly());
+            customExceptionHandler.start();
         }
     }
 
@@ -112,7 +112,7 @@ class FoamMain {
     private void startLogListener() {
         List<LoggingService> services = getEnabledServicesForType(LoggingService.class);
         if(!services.isEmpty()) {
-            LogListener logListener = new LogListener(context, services);
+            LogListener logListener = new LogListener(context, services, foamApiKeys.wifiOnly());
             logListener.start();
         }
     }
@@ -124,7 +124,7 @@ class FoamMain {
     private void startEventTracker(){
         List<EventTrackingService> services = getEnabledServicesForType(EventTrackingService.class);
         if(!services.isEmpty()) {
-            eventTracker = new EventTracker(context, services);
+            eventTracker = new EventTracker(context, services, foamApiKeys.wifiOnly());
             eventTracker.start();
         }
     }

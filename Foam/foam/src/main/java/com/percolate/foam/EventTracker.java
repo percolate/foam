@@ -20,11 +20,17 @@ import java.util.List;
 class EventTracker {
 
     private Context context;
+
+    /* Services that will receive tracking events */
     private List<EventTrackingService> services;
 
-    public EventTracker(Context context, List<EventTrackingService> services) {
+    /* Only send events over WiFi */
+    private boolean wifiOnly;
+
+    public EventTracker(Context context, List<EventTrackingService> services, boolean wifiOnly) {
         this.context = context;
         this.services = services;
+        this.wifiOnly = wifiOnly;
     }
 
     /**
@@ -88,7 +94,9 @@ class EventTracker {
      * @return true if Activity does not have FoamDontTrack (on class on any of the methods)
      */
     private boolean shouldTrack(Activity activity) {
-        if(activity!=null){
+        if(wifiOnly && !Utils.isOnWifi(context)){
+            return false;
+        } else if(activity!=null){
             Class<? extends Activity> clazz = activity.getClass();
             if(clazz.isAnnotationPresent(FoamDontTrack.class)){
                 return false;
@@ -100,6 +108,7 @@ class EventTracker {
                 }
             }
         }
+
         return true;
     }
 

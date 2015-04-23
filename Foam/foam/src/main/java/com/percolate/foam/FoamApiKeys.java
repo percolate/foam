@@ -51,4 +51,6 @@ public @interface FoamApiKeys {
     String flurry() default "";
     String graphite() default "";
 
+    boolean wifiOnly() default false;
+
 }
