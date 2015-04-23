@@ -33,15 +33,19 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
     /* Services that crashes will be reported to */
     private List<CrashReportingService> services;
 
+    /* Only send events over WiFi */
+    private boolean wifiOnly;
+
     /* Object used to store exceptions so they can be sent on next launch */
     private ExceptionPersister exceptionPersister;
 
     /* ExceptionHandler that was registered before we registered our version */
     private final Thread.UncaughtExceptionHandler defaultHandler;
 
-    CustomExceptionHandler(Context context, List<CrashReportingService> crashReportingServices) {
+    CustomExceptionHandler(Context context, List<CrashReportingService> crashReportingServices, boolean wifiOnly) {
         this.context = context;
         this.services = crashReportingServices;
+        this.wifiOnly = wifiOnly;
         this.defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
         this.exceptionPersister = new ExceptionPersister(context);
     }
@@ -95,14 +99,16 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
      * them to their corresponding service.
      */
     public void sendStoredExceptions(){
-        for (Map.Entry<String, StoredException> entry : getStoredExceptions().entrySet()) {
-            String fileName = entry.getKey();
-            StoredException storedException = entry.getValue();
+        if(!wifiOnly || Utils.isOnWifi(context)) {
+            for (Map.Entry<String, StoredException> entry : getStoredExceptions().entrySet()) {
+                String fileName = entry.getKey();
+                StoredException storedException = entry.getValue();
 
-            for (CrashReportingService service : services) {
-                if(service.isEnabled()) {
-                    Callback<Object> callback = new DeleteFileCallback(context, fileName);
-                    service.logEvent(storedException, callback);
+                for (CrashReportingService service : services) {
+                    if (service.isEnabled()) {
+                        Callback<Object> callback = new DeleteFileCallback(context, fileName);
+                        service.logEvent(storedException, callback);
+                    }
                 }
             }
         }

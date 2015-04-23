@@ -21,6 +21,9 @@ class LogListener {
     /* Service that will receive log events */
     private List<LoggingService> services;
 
+    /* Only send events over WiFi */
+    private boolean wifiOnly;
+
     /**
      * Set to <code>true</code> to stop monitoring logcat output
      */
@@ -31,9 +34,10 @@ class LogListener {
      */
     private int pollFrequencyMs = 5000;
 
-    LogListener(Context context, List<LoggingService> services){
+    LogListener(Context context, List<LoggingService> services, boolean wifiOnly){
         this.context = context;
         this.services = services;
+        this.wifiOnly = wifiOnly;
     }
 
     /**
@@ -90,11 +94,13 @@ class LogListener {
      * @param logs Logs to process (check if they are errors, and send them to each enabled service).
      */
     private void processLogEntries(List<String> logs) {
-        for (String log : logs) {
-            if(log != null && log.startsWith("E")){
-                for (LoggingService service : services) {
-                    if (service.isEnabled()) {
-                        service.logEvent(log);
+        if(!wifiOnly || Utils.isOnWifi(context)) {
+            for (String log : logs) {
+                if (log != null && log.startsWith("E")) {
+                    for (LoggingService service : services) {
+                        if (service.isEnabled()) {
+                            service.logEvent(log);
+                        }
                     }
                 }
             }

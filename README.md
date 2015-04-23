@@ -25,7 +25,6 @@ Want to use Google Analytics, PagerDuty, and Logentries?  Sure...
 
 You add your API Keys, we'll do the rest.
 
-
 ## Supported Services
 
 | Crash Reporting    | Event Tracking   | Log Management |
@@ -35,13 +34,11 @@ You add your API Keys, we'll do the rest.
 | HockeyApp          | Google Analytics |                |
 | Flurry             |                  |                |
 
-
 **Crash Reporting:** Unhandled exceptions will be reported.
 
 **Event Tracking:** Activity launches will be tracked.
 
 **Log management:** Error logs from devices will be reported.
-
 
 ## Setup All The Things
 
@@ -64,21 +61,20 @@ That's it.  You've just enabled all of these services for your application.  Wel
 1. Internet permission in your `AndroidManifest.xml`:
 
         <uses-permission android:name="android.permission.INTERNET" />
-        
-2. At least min API level 14 in `build.gradle`:
+
+1. At least min API level 14 in `build.gradle`:
 
         minSdkVersion 14
 
-3. Define your custom Application class in your `AndroidManifest.xml`:
+1. Define your custom Application class in your `AndroidManifest.xml`:
 
         <application
             android:name="com.your.app.MyApplication"
 
-4. Dependencies for Retrofit & Gson in `build.gradle`:
+1. Dependencies for Retrofit & Gson in `build.gradle`:
 
         compile 'com.squareup.retrofit:retrofit:1.9.0'
         compile 'com.google.code.gson:gson:2.3'
-
 
 ## Where to find your API Keys:
 
@@ -98,10 +94,11 @@ That's it.  You've just enabled all of these services for your application.  Wel
 
 ## Notes:
 
-  - It takes time for some services to process incoming data.  There may be a delay of few hours before anything shows up.  Be patient.
-  - Like other crash reporting tools, crashes are sent when the user reopens the app after a crash.  Keeping an app open to send data during a crash would lead to other problems, such as ARNs.
-  - Does you application currently extend MultiDexApplication?  No problem, just use our `FoamMultiDexApplication` version instead.
-  - Can't extend `FoamApplication` or `FoamMultiDexApplication` for some reason?  That's fine too.  Make your application class implement our `FoamApp` interface, and add `` to onCreate()
+- It takes time for some services to process incoming data.  There may be a delay of few hours before anything shows up.  Be patient.
+- Like other crash reporting tools, crashes are sent when the user reopens the app after a crash.  Keeping an app open to send data during a crash would lead to other problems, such as ARNs.
+- Does you application currently extend MultiDexApplication?  No problem, just use our `FoamMultiDexApplication` version instead.
+- Can't extend `FoamApplication` or `FoamMultiDexApplication` for some reason?  That's fine too.  Make your application class implement our `FoamApp` interface, and add `` to onCreate()
+- If your application may be sending lots of data, you may want to set `wifiOnly = true` on the `@FoamApiKeys` annotation.
 
 **Why no Crashlytics?**
 
@@ -112,12 +109,10 @@ That's it.  You've just enabled all of these services for your application.  Wel
   If Crashlytics were to ever support manual configuration or provide an API to submit crashes, we will add it.  
   In the meantime, if you wish to use Crashlytics in your application, instructions can be found [here](https://crashlytics.com/downloads).
 
-
 ## TODO
 
 **iOS version:** Coming soon
 **Services to add:** Loggly
-
 
 ## License
 

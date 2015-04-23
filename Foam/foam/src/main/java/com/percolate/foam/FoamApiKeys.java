@@ -50,4 +50,6 @@ public @interface FoamApiKeys {
     String googleAnalytics() default "";
     String flurry() default "";
 
+    boolean wifiOnly() default false;
+
 }

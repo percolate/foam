@@ -3,6 +3,8 @@ package com.percolate.foam;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -155,4 +157,23 @@ class Utils {
         }
     }
 
+    /**
+     * Check to see if the device is currently connected to a WiFi network.  Used along with
+     * {@link FoamApiKeys#wifiOnly()} to only send data over WiFi.
+     *
+     * @param context Context
+     * @return true if the device is currently connected to a WiFi network.
+     */
+    public static boolean isOnWifi(Context context) {
+        try {
+            ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (mWifi.isConnected()) {
+                return true;
+            }
+        } catch (Exception ex){
+            logIssue("Error checking wifi state", ex);
+        }
+        return false;
+    }
 }
