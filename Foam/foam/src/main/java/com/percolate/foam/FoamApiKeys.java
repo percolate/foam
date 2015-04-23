@@ -49,5 +49,6 @@ public @interface FoamApiKeys {
     String mixpanel() default "";
     String googleAnalytics() default "";
     String flurry() default "";
+    String graphite() default "";
 
 }

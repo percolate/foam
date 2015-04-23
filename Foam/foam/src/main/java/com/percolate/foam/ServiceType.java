@@ -10,5 +10,6 @@ enum ServiceType {
     MIXPANEL,
     GOOGLE_ANALYTICS,
     FLURRY,
-    LOGENTRIES
+    LOGENTRIES,
+    GRAPHITE
 }
