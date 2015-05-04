@@ -119,6 +119,8 @@ That's it.  You've just enabled all of these services for your application.  Wel
 
 If you would like to add a new service please create a pull request.  A good example of what is required is contained in our [Adding Graphite PR]( https://github.com/percolate/foam/pull/3).
 
+Feel free to open a [new issue](https://github.com/percolate/foam/issues) for platforms you would like to see added.
+
 ## License
 
 Open source.  Distributed under the BSD 3 license.  See [license.txt](https://github.com/percolate/foam/blob/master/license.txt) for details.
