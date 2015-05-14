@@ -23,10 +23,7 @@ import retrofit.mime.TypedOutput;
 import retrofit.mime.TypedString;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * {@inheritDoc}
  */
 class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
 

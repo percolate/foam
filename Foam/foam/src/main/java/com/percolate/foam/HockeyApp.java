@@ -24,10 +24,7 @@ import retrofit.http.Path;
 import retrofit.mime.TypedFile;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * {@inheritDoc}
  */
 class HockeyApp extends ServiceImpl implements CrashReportingService {
 

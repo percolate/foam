@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
+ * Foam Main class.  Contains logic to initialize, start, and run Foam for an applicatition.
+ * This class should be started by {@link FoamApplicationInit}.
  *
- * @author brent
+ * To add new services to foam, modify {@link #init(FoamApiKeys)} to add your new service
+ * to our <code>services</code> map, then modify {@link #initializeServices()} to pass the
+ * correct API key to the service.  More details can be found in the README / wiki.
  */
 class FoamMain {
 
