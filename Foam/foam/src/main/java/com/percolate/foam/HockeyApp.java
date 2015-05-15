@@ -73,14 +73,14 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
             @Override
             public void success(HockeyAppsDTO appsList, Response response) {
                 String appId = getAppIDFromResponse(appsList);
-                if (Utils.isNotBlank(appId)) {
+                if (utils.isNotBlank(appId)) {
                     createLogEvent(appId, service, storedException, deleteStoredExceptionCallback);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Utils.logIssue("Error getting hockeyapp list of apps", error);
+                utils.logIssue("Error getting hockeyapp list of apps", error);
             }
         });
     }
@@ -89,7 +89,7 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
      * Return `apps[].public_identifier` for app where app.bundle_identifier == <package-name>
      */
     private String getAppIDFromResponse(HockeyAppsDTO appsList) {
-        final String applicationPackageName = Utils.getApplicationPackageName(context);
+        final String applicationPackageName = utils.getApplicationPackageName(context);
         String hockeyAppApplicationId = null;
         if (appsList != null && appsList.apps != null && !appsList.apps.isEmpty()) {
             for (HockeyAppDTO app : appsList.apps) {
@@ -150,9 +150,9 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
             File outputDir = context.getCacheDir();
             logFile = File.createTempFile("hockey_app_crash_", ".log", outputDir);
             writer = new BufferedWriter(new FileWriter(logFile));
-            writer.write("Package: " + Utils.getApplicationPackageName(context) + "\n");
-            writer.write("Version Code: " + Utils.getVersionCode(context) + "\n");
-            writer.write("Version Name: " + Utils.getVersionName(context) + "\n");
+            writer.write("Package: " + utils.getApplicationPackageName(context) + "\n");
+            writer.write("Version Code: " + utils.getVersionCode(context) + "\n");
+            writer.write("Version Name: " + utils.getVersionName(context) + "\n");
             writer.write("Android: " + Build.VERSION.RELEASE + "\n");
             writer.write("Manufacturer: " + Build.MANUFACTURER + "\n");
             writer.write("Model: " + Build.MODEL + "\n");
@@ -161,7 +161,7 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
             writer.write(stackTrace);
             writer.close();
         } catch (Exception ex) {
-            Utils.logIssue("Error witting crash report to temp log file", ex);
+            utils.logIssue("Error witting crash report to temp log file", ex);
         }
         return logFile;
     }

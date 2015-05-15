@@ -2,7 +2,6 @@ package com.percolate.foam;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.SystemClock;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -18,6 +17,8 @@ class LogListener {
 
     private Context context;
 
+    protected Utils utils;
+
     /* Service that will receive log events */
     private List<LoggingService> services;
 
@@ -27,7 +28,7 @@ class LogListener {
     /**
      * Set to <code>true</code> to stop monitoring logcat output
      */
-    private boolean stop = false;
+    protected boolean stop = false;
 
     /**
      * Frequency to check for new log messages (ms).
@@ -36,6 +37,7 @@ class LogListener {
 
     LogListener(Context context, List<LoggingService> services, boolean wifiOnly){
         this.context = context;
+        this.utils = new Utils();
         this.services = services;
         this.wifiOnly = wifiOnly;
     }
@@ -50,18 +52,25 @@ class LogListener {
     /**
      * In a new thread, continuously check new log messages and process any new errors log messages.
      */
-    private void startMonitoringLogcat() {
+    protected void startMonitoringLogcat() {
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... params) {
                 while(!stop){
-                    List<String> logs = getNewLogs();
-                    processLogEntries(logs);
-                    SystemClock.sleep(pollFrequencyMs);
+                    processNewLogs();
                 }
                 return null;
             }
         }.execute();
+    }
+
+    /**
+     * Get & process new logcat messages
+     */
+    protected void processNewLogs() {
+        List<String> logs = getNewLogs();
+        processLogEntries(logs);
+        utils.sleep(pollFrequencyMs);
     }
 
     /**
@@ -84,7 +93,7 @@ class LogListener {
             Runtime.getRuntime().exec(new String[]{"logcat", "-c"});
         }
         catch (Exception ex){
-            Utils.logIssue("Error trying to read logcat output", ex);
+            utils.logIssue("Error trying to read logcat output", ex);
         }
         return logs;
     }
@@ -93,8 +102,8 @@ class LogListener {
      * Pass all error entries to all enabled services.
      * @param logs Logs to process (check if they are errors, and send them to each enabled service).
      */
-    private void processLogEntries(List<String> logs) {
-        if(!wifiOnly || Utils.isOnWifi(context)) {
+    protected void processLogEntries(List<String> logs) {
+        if(!wifiOnly || utils.isOnWifi(context)) {
             for (String log : logs) {
                 if (log != null && log.startsWith("E")) {
                     for (LoggingService service : services) {

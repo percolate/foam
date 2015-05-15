@@ -27,7 +27,7 @@ class DeleteFileCallback implements Callback<Object> {
         try {
             context.deleteFile(storedExceptionFileName);
         } catch(Exception ex){
-            Utils.logIssue("Could not ", ex);
+            new Utils().logIssue("Could not ", ex);
         }
     }
 
@@ -36,6 +36,6 @@ class DeleteFileCallback implements Callback<Object> {
      */
     @Override
     public void failure(RetrofitError error) {
-        Utils.logIssue("RetrofitError in DeleteFileCallback.  File: [" + storedExceptionFileName + "]", error);
+        new Utils().logIssue("RetrofitError in DeleteFileCallback.  File: [" + storedExceptionFileName + "]", error);
     }
 }

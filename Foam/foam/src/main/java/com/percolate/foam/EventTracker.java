@@ -21,6 +21,8 @@ class EventTracker {
 
     private Context context;
 
+    private Utils utils;
+
     /* Services that will receive tracking events */
     private List<EventTrackingService> services;
 
@@ -29,6 +31,7 @@ class EventTracker {
 
     public EventTracker(Context context, List<EventTrackingService> services, boolean wifiOnly) {
         this.context = context;
+        this.utils = new Utils();
         this.services = services;
         this.wifiOnly = wifiOnly;
     }
@@ -42,7 +45,7 @@ class EventTracker {
                     createActivityLifecycleCallback()
             );
         } else {
-            Utils.logIssue("EventTracker could not start.  Context is not an Application", null);
+            utils.logIssue("EventTracker could not start.  Context is not an Application", null);
         }
     }
 
@@ -94,7 +97,7 @@ class EventTracker {
      * @return true if Activity does not have FoamDontTrack (on class on any of the methods)
      */
     private boolean shouldTrack(Activity activity) {
-        if(wifiOnly && !Utils.isOnWifi(context)){
+        if(wifiOnly && !utils.isOnWifi(context)){
             return false;
         } else if(activity!=null){
             Class<? extends Activity> clazz = activity.getClass();

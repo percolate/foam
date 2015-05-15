@@ -29,6 +29,7 @@ import retrofit.Callback;
 class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     private Context context;
+    private Utils utils;
 
     /* Services that crashes will be reported to */
     private List<CrashReportingService> services;
@@ -44,6 +45,7 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     CustomExceptionHandler(Context context, List<CrashReportingService> crashReportingServices, boolean wifiOnly) {
         this.context = context;
+        this.utils = new Utils();
         this.services = crashReportingServices;
         this.wifiOnly = wifiOnly;
         this.defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
@@ -80,7 +82,7 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
      * @param ex Exception data.
      */
     private void storeException(Thread thread, Throwable ex) {
-        String stackTrace = Utils.trimToSize(Log.getStackTraceString(ex), 1024);
+        String stackTrace = utils.trimToSize(Log.getStackTraceString(ex), 1024);
 
         for (Service service : services) {
             if(service.isEnabled()){
@@ -99,7 +101,7 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
      * them to their corresponding service.
      */
     public void sendStoredExceptions(){
-        if(!wifiOnly || Utils.isOnWifi(context)) {
+        if(!wifiOnly || utils.isOnWifi(context)) {
             for (Map.Entry<String, StoredException> entry : getStoredExceptions().entrySet()) {
                 String fileName = entry.getKey();
                 StoredException storedException = entry.getValue();

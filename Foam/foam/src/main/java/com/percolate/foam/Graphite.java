@@ -38,10 +38,10 @@ class Graphite extends ServiceImpl implements EventTrackingService {
             try {
                 this.port = Integer.parseInt(second);
             } catch (NumberFormatException ex) {
-                Utils.logIssue("Invalid port in Graphite URL [" + second + "]", ex);
+                utils.logIssue("Invalid port in Graphite URL [" + second + "]", ex);
             }
         } else {
-            Utils.logIssue("Invalid Graphite URL.  Expecting \"[key@]host:port\" format.", null);
+            utils.logIssue("Invalid Graphite URL.  Expecting \"[key@]host:port\" format.", null);
         }
     }
 
@@ -71,11 +71,11 @@ class Graphite extends ServiceImpl implements EventTrackingService {
     @Override
     public void logEvent(Context context, String event) {
         StringBuilder eventData = new StringBuilder();
-        if(Utils.isNotBlank(apiKey)){
+        if(utils.isNotBlank(apiKey)){
             eventData.append(apiKey);
             eventData.append(".");
         }
-        eventData.append(Utils.getApplicationPackageName(context));
+        eventData.append(utils.getApplicationPackageName(context));
         eventData.append(".");
         eventData.append(event);
         eventData.append(" 1 ");
@@ -102,13 +102,13 @@ class Graphite extends ServiceImpl implements EventTrackingService {
                     dos.writeBytes(graphiteEvent);
                     dos.flush();
                 } catch (IOException ex) {
-                    Utils.logIssue("Error sending graphite event [" + graphiteEvent + "].", ex);
+                    utils.logIssue("Error sending graphite event [" + graphiteEvent + "].", ex);
                 } finally {
                     if(conn != null) {
                         try {
                             conn.close();
                         } catch (IOException ex) {
-                            Utils.logIssue("Could not close graphite socket.", ex);
+                            utils.logIssue("Could not close graphite socket.", ex);
                         }
                     }
                 }

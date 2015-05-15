@@ -31,15 +31,8 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
     /** Port portion of {@link #url} */
     private int port = -1;
 
-    /** syslog style date formatter */
-    SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss", Locale.US);
-
-    /** Application name */
-    private final String applicationName;
-
     UDPLoggingService(Context context){
         super(context);
-        applicationName = Utils.getApplicationName(context);
     }
 
     /**
@@ -53,7 +46,7 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
             try {
                 port = Integer.parseInt(url.split(":")[1]);
             } catch (NumberFormatException nfe) {
-                Utils.logIssue("Could not get port number from url [" + url + "]", nfe);
+                utils.logIssue("Could not get port number from url [" + url + "]", nfe);
             }
         }
     }
@@ -70,14 +63,14 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
      * Send stored exception (i.e., crashes) to UDP endpoint
      */
     public void logEvent(StoredException storedException, Callback<Object> callback){
-        sendLogEvent(storedException.threadName, storedException.stackTrace);
+        sendLogEvent(storedException.threadName, storedException.stackTrace, callback);
     }
 
     /**
      * Send individual log messages (i.e., Log.e() calls) to UDP endpoint
      */
     public void logEvent(String log){
-        sendLogEvent("Log", log);
+        sendLogEvent("Log", log, null);
     }
 
     /**
@@ -85,16 +78,21 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
      * syslog format: "<priority>timestamp orange_link blue_link: message"
      * Details: http://en.wikipedia.org/wiki/Syslog#Priority
      */
-    private void sendLogEvent(String component, String message){
-        Date now = new Date();
-        String date = df.format(now);
+    protected void sendLogEvent(String component, String message, Callback<Object> callback){
         String syslogMessage = String.format(Locale.US, "<22>%s %s %s:%s",
-                date,
-                applicationName,
+                getSysLogFormattedDate(),
+                utils.getApplicationName(context),
                 component,
                 message
         );
-        sendDataOverUDP(syslogMessage, null);
+        sendDataOverUDP(syslogMessage, callback);
+    }
+
+    /** syslog style date formatter */
+    protected String getSysLogFormattedDate() {
+        SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss", Locale.US);
+        Date now = new Date();
+        return df.format(now);
     }
 
     /**
@@ -105,7 +103,7 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
      * @param deleteFileCallback Retrofit Callback.  After data is sent this Callback is executed
      *                           to delete the file that contained the data that was sent.
      */
-    private void sendDataOverUDP(final String syslogMessage, final DeleteFileCallback deleteFileCallback) {
+    protected void sendDataOverUDP(final String syslogMessage, final Callback<Object> deleteFileCallback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -120,7 +118,7 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
                         deleteFileCallback.success(null, null);
                     }
                 } catch (Exception ex) {
-                    Utils.logIssue("Error sending UDP log message", ex);
+                    utils.logIssue("Error sending UDP log message", ex);
                 }
             }
         }).start();

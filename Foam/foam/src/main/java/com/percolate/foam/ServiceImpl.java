@@ -8,9 +8,11 @@ import android.content.Context;
 abstract class ServiceImpl implements Service {
 
     protected Context context;
+    protected Utils utils;
 
     ServiceImpl(Context context){
         this.context = context;
+        this.utils = new Utils();
     }
 
 }

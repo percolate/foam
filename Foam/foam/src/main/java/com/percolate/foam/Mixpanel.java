@@ -20,6 +20,7 @@ import retrofit.http.Query;
 class Mixpanel extends ServiceImpl implements EventTrackingService {
 
     private String projectToken;
+    protected MixpanelService mixpanelService;
 
     Mixpanel(Context context) {
         super(context);
@@ -38,7 +39,7 @@ class Mixpanel extends ServiceImpl implements EventTrackingService {
      */
     @Override
     public boolean isEnabled() {
-        return projectToken != null;
+        return utils.isNotBlank(projectToken);
     }
 
     /**
@@ -54,20 +55,29 @@ class Mixpanel extends ServiceImpl implements EventTrackingService {
      */
     @Override
     public void logEvent(Context context, String eventName) {
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("https://api.mixpanel.com")
-                .build();
-
-        MixpanelService service = restAdapter.create(MixpanelService.class);
-
         MixpanelEvent event = new MixpanelEvent();
         event.event = eventName;
         event.properties.put("token", projectToken);
-        event.properties.put("distinct_id", Utils.getAndroidId(context));
+        event.properties.put("distinct_id", utils.getAndroidId(context));
 
         String data = eventObjToBase64(event);
+        createService().trackEvent(data, new NoOpCallback());
+    }
 
-        service.trackEvent(data, new NoOpCallback());
+
+    /**
+     * Lazy load instance of {@link MixpanelService}
+     * @return Instance of {@link MixpanelService}.  Never null.
+     */
+    protected MixpanelService createService(){
+        if(mixpanelService == null) {
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint("https://api.mixpanel.com")
+                    .build();
+
+            mixpanelService = restAdapter.create(MixpanelService.class);
+        }
+        return mixpanelService;
     }
 
     /**
@@ -76,16 +86,25 @@ class Mixpanel extends ServiceImpl implements EventTrackingService {
      * @param event Event data to send.
      * @return Base64 encoded version of the passed in MixpanelEvent DTO.
      */
-    private String eventObjToBase64(MixpanelEvent event) {
+    protected String eventObjToBase64(MixpanelEvent event) {
         Gson gson = new Gson();
         String json = gson.toJson(event);
-        return Base64.encodeToString(json.getBytes(), Base64.DEFAULT);
+        return toBase64(json.getBytes());
+    }
+
+    /**
+     * Return given bytes as a BASE64 encoded string.
+     * @param data Data to encode
+     * @return Base64 encoded version of <code>data</code>
+     */
+    protected String toBase64(byte[] data){
+        return Base64.encodeToString(data, Base64.DEFAULT);
     }
 
     /**
      * Retrofit service
      */
-    private interface MixpanelService{
+    protected interface MixpanelService{
         @GET("/track/")
         void trackEvent(@Query("data") String data, Callback<Response> callback);
     }
@@ -93,7 +112,7 @@ class Mixpanel extends ServiceImpl implements EventTrackingService {
     /**
      * Data transfer object to send to Mixpanel
      */
-    private class MixpanelEvent {
+    protected class MixpanelEvent {
         String event;
         Map<String, String> properties = new HashMap<String, String>();
     }

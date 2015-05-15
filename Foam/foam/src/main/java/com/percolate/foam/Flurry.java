@@ -25,8 +25,8 @@ class Flurry extends ServiceImpl implements EventTrackingService {
         this.applicationKey = applicationKey;
 
         //FlurryAgent.setLogEnabled(true);
-        FlurryAgent.setVersionName(Utils.getVersionName(context));
-        FlurryAgent.setUserId(Utils.getAndroidId(context));
+        FlurryAgent.setVersionName(utils.getVersionName(context));
+        FlurryAgent.setUserId(utils.getAndroidId(context));
         FlurryAgent.setCaptureUncaughtExceptions(true);  // Crashes will also be reported
         FlurryAgent.init(context, applicationKey);
     }
@@ -67,7 +67,7 @@ class Flurry extends ServiceImpl implements EventTrackingService {
             Class.forName("com.flurry.android.FlurryAgent", false, getClass().getClassLoader());
             return true;
         } catch (ClassNotFoundException e) {
-            Utils.logIssue("\n\n\nFoam: You must add the FlurryAnalytics-x.x.x.jar file " +
+            utils.logIssue("\n\n\nFoam: You must add the FlurryAnalytics-x.x.x.jar file " +
                     "to your application to enable flurry analytics.  This can be found at " +
                     "https://dev.flurry.com under Applications Tab -> Select your application " +
                     "-> Manage -> 'Download SDK'.\n\n\n", null);

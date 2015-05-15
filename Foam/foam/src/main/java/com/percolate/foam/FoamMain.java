@@ -88,7 +88,7 @@ class FoamMain {
                 apiKey = foamApiKeys.graphite();
             }
 
-            if(Utils.isNotBlank(apiKey)){
+            if(new Utils().isNotBlank(apiKey)){
                 service.enable(apiKey);
             }
 
