@@ -5,8 +5,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,5 +52,6 @@ public class LogListenerTest {
         logListener.processLogEntries(logs);
 
         verify(mockService).logEvent(logs.get(3));
+        verify(mockService, times(1)).logEvent(anyString());
     }
 }
