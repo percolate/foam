@@ -55,7 +55,7 @@ class PagerDuty extends ServiceImpl implements CrashReportingService  {
      * Lazy load instance of {@link PagerDutyService}
      * @return Instance of {@link PagerDutyService}.  Never null.
      */
-    protected PagerDutyService createService(){
+    PagerDutyService createService(){
         if(pagerDutyService == null) {
             RestAdapter restAdapter = new RestAdapter.Builder()
                     .setEndpoint("https://events.pagerduty.com")
@@ -68,7 +68,7 @@ class PagerDuty extends ServiceImpl implements CrashReportingService  {
     /**
      * Retrofit service
      */
-    protected interface PagerDutyService {
+    interface PagerDutyService {
         @POST("/generic/2010-04-15/create_event.json")
         void createEvent(@Body PagerDutyEvent pagerDutyEvent, Callback<Object> callback);
     }
@@ -79,7 +79,7 @@ class PagerDuty extends ServiceImpl implements CrashReportingService  {
      * @param storedException Data to convert
      * @return Populated PagerDutyEvent object.
      */
-    protected PagerDutyEvent createEvent(StoredException storedException){
+    PagerDutyEvent createEvent(StoredException storedException){
         PagerDutyEvent pagerDutyEvent = new PagerDutyEvent();
         pagerDutyEvent.service_key = apiKey;
         pagerDutyEvent.event_type = "trigger";
@@ -94,7 +94,7 @@ class PagerDuty extends ServiceImpl implements CrashReportingService  {
     /**
      * Object that will be POSTed to PagerDuty as JSON.
      */
-    protected class PagerDutyEvent {
+    class PagerDutyEvent {
         protected String service_key;
         protected String event_type;
         protected String incident_key;

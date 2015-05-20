@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class StoredExceptionTest {
 
     @Test
-    public void testCreation(){
+    public void testCreation() {
         StoredException storedException = new StoredException(ServiceType.MIXPANEL, "message", "threadName", "stackTrace");
         assertEquals(ServiceType.MIXPANEL, storedException.platform);
         assertEquals("message", storedException.message);

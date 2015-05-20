@@ -11,9 +11,9 @@ import java.net.Socket;
  */
 class Graphite extends ServiceImpl implements EventTrackingService {
 
-    private String host;
-    private int port;
-    private String apiKey;
+    String host;
+    int port;
+    String apiKey;
 
     Graphite(Context context) {
         super(context);
@@ -24,7 +24,7 @@ class Graphite extends ServiceImpl implements EventTrackingService {
      */
     @Override
     public void enable(String url) {
-        if(url.contains(":") && url.split(":").length == 2) {
+        if(utils.isNotBlank(url) && url.contains(":") && url.split(":").length == 2) {
             String first = url.split(":")[0];
             String second = url.split(":")[1];
 
@@ -79,41 +79,77 @@ class Graphite extends ServiceImpl implements EventTrackingService {
         eventData.append(".");
         eventData.append(event);
         eventData.append(" 1 ");
-        eventData.append(System.currentTimeMillis() / 1000L);
+        eventData.append(getTimeStamp());
         eventData.append("\n");
 
         sendData(eventData.toString());
     }
 
     /**
-     * Send data to Graphite server.
-     * Data is sent over TCP in a new thread.
+     * Return unix epoch for the current time
+     * @return Epoch in for the current time.
+     */
+    long getTimeStamp() {
+        return System.currentTimeMillis() / 1000L;
+    }
+
+    /**
+     * Start new background thread to send data with.
      *
      * @param graphiteEvent Event data to send to graphite.
      */
-    private void sendData(final String graphiteEvent) {
+    void sendData(final String graphiteEvent) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Socket conn = null;
-                try {
-                    conn = new Socket(host, port);
-                    DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
-                    dos.writeBytes(graphiteEvent);
-                    dos.flush();
-                } catch (IOException ex) {
-                    utils.logIssue("Error sending graphite event [" + graphiteEvent + "].", ex);
-                } finally {
-                    if(conn != null) {
-                        try {
-                            conn.close();
-                        } catch (IOException ex) {
-                            utils.logIssue("Could not close graphite socket.", ex);
-                        }
-                    }
-                }
+                sendUdpData(graphiteEvent);
             }
         }).start();
+    }
+
+    /**
+     * Send data to Graphite server.
+     *
+     * @param graphiteEvent Event data to send to graphite.
+     */
+    void sendUdpData(String graphiteEvent) {
+        Socket socket = null;
+        try {
+            socket = sendDataOverSocket(graphiteEvent);
+        } catch (IOException ex) {
+            utils.logIssue("Error sending graphite event [" + graphiteEvent + "] to [" + host + ":" + port + "].", ex);
+        } finally {
+            closeSocket(socket);
+        }
+    }
+
+    /**
+     * Create new {@link DataOutputStream} to send data over.
+     *
+     * @param graphiteEvent Event data to send to graphite.
+     * @return created {@link Socket} object.  Should be closed after calling this method.
+     * @throws IOException propagates if there was a network issue.
+     */
+    Socket sendDataOverSocket(String graphiteEvent) throws IOException {
+        Socket socket = new Socket(host, port);
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        dos.writeBytes(graphiteEvent);
+        dos.flush();
+        return socket;
+    }
+
+    /**
+     * Close the given {@link} Socket object, checking for null
+     * @param socket socket to close.
+     */
+    void closeSocket(Socket socket) {
+        if(socket != null) {
+            try {
+                socket.close();
+            } catch (Exception ex) {
+                utils.logIssue("Could not close graphite socket [" + host + ":" + port + "].", ex);
+            }
+        }
     }
 
 }

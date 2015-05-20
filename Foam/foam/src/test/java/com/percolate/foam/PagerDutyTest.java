@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 public class PagerDutyTest {
 
     @Test
-    public void testEnable() throws Exception {
+    public void testEnable() {
         PagerDuty pagerDuty = new PagerDuty(null);
         assertFalse(pagerDuty.isEnabled());
         pagerDuty.enable("unit_test_api_key");
@@ -29,7 +29,7 @@ public class PagerDutyTest {
     }
 
     @Test
-    public void testEnableBadValues() throws Exception {
+    public void testEnableBadValues() {
         PagerDuty pagerDuty = new PagerDuty(null);
 
         pagerDuty.enable(null);
@@ -43,14 +43,14 @@ public class PagerDutyTest {
     }
 
     @Test
-    public void testGetServiceType() throws Exception {
+    public void testGetServiceType() {
         PagerDuty pagerDuty = new PagerDuty(null);
         assertEquals(ServiceType.PAGERDUTY, pagerDuty.getServiceType());
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testLogEvent() throws Exception {
+    public void testLogEvent() {
         PagerDuty.PagerDutyService mockPagerDutyService = mock(PagerDuty.PagerDutyService.class);
         Callback mockCallback = mock(Callback.class);
 
@@ -70,7 +70,7 @@ public class PagerDutyTest {
     }
 
     @Test
-    public void testCreateService(){
+    public void testCreateService() {
         PagerDuty pagerDuty = new PagerDuty(null);
         assertNull(pagerDuty.pagerDutyService);
         pagerDuty.createService();
@@ -83,7 +83,7 @@ public class PagerDutyTest {
     }
 
     @Test
-    public void testCreateEvent(){
+    public void testCreateEvent() {
         PagerDuty pagerDuty = new PagerDuty(null);
         pagerDuty.apiKey = "unit_test_api_key";
         StoredException storedException = new StoredException(ServiceType.MIXPANEL, "test message", "test threadName", "test\nstack\ntrace");

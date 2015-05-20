@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 public class MixpanelTest {
 
     @Test
-    public void testEnable() throws Exception {
+    public void testEnable() {
         Mixpanel mixpanel = new Mixpanel(null);
         assertFalse(mixpanel.isEnabled());
         mixpanel.enable("unit_test_key");
@@ -30,7 +30,7 @@ public class MixpanelTest {
     }
 
     @Test
-    public void testEnableBadValues() throws Exception {
+    public void testEnableBadValues() {
         Mixpanel mixpanel = new Mixpanel(null);
         assertFalse(mixpanel.isEnabled());
 
@@ -46,13 +46,13 @@ public class MixpanelTest {
     }
 
     @Test
-    public void testGetServiceType() throws Exception {
+    public void testGetServiceType() {
         assertEquals(ServiceType.MIXPANEL, new Mixpanel(null).getServiceType());
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testLogEvent() throws Exception {
+    public void testLogEvent() {
         Mixpanel.MixpanelService mockMixpanelService = mock(Mixpanel.MixpanelService.class);
         Mixpanel mixpanel = new Mixpanel(null){
             @Override
@@ -69,7 +69,7 @@ public class MixpanelTest {
     }
 
     @Test
-    public void testCreateService(){
+    public void testCreateService() {
         Mixpanel mixpanel = new Mixpanel(null);
         assertNull(mixpanel.mixpanelService);
         mixpanel.createService();
@@ -82,7 +82,7 @@ public class MixpanelTest {
     }
 
     @Test
-    public void testEventObjToBase64(){
+    public void testEventObjToBase64() {
         Mixpanel mixpanel = new Mixpanel(null){
             @Override
             protected String toBase64(byte[] data) {

@@ -43,7 +43,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void testIsNotBlank(){
+    public void testIsNotBlank() {
         assertFalse(utils.isNotBlank(""));
         assertFalse(utils.isNotBlank(" "));
         assertFalse(utils.isNotBlank("  "));
@@ -59,9 +59,8 @@ public class UtilsTest {
         assertTrue(utils.isNotBlank("\""));
     }
 
-
     @Test
-    public void testTrimToSize() throws Exception {
+    public void testTrimToSize() {
         assertEquals("", utils.trimToSize("test", 0));
         assertEquals("t", utils.trimToSize("test", 1));
         assertEquals("test", utils.trimToSize("test", 4));
@@ -69,38 +68,4 @@ public class UtilsTest {
         assertEquals("    ", utils.trimToSize("    test    ", 4));
     }
 
-    @Test
-    public void testLogIssue() throws Exception {
-        //TODO
-    }
-
-    @Test
-    public void testGetApplicationName() throws Exception {
-        //TODO
-    }
-
-    @Test
-    public void testGetVersionName() throws Exception {
-        //TODO
-    }
-
-    @Test
-    public void testGetVersionCode() throws Exception {
-        //TODO
-    }
-
-    @Test
-    public void testGetApplicationPackageName() throws Exception {
-        //TODO
-    }
-
-    @Test
-    public void testGetAndroidId() throws Exception {
-        //TODO
-    }
-
-    @Test
-    public void testIsOnWifi() throws Exception {
-        //TODO
-    }
 }

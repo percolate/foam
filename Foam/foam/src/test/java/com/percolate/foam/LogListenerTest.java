@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class LogListenerTest {
 
     @Test
-    public void testStart() throws Exception {
+    public void testStart() {
         LogListener logListener = mock(LogListener.class);
         doCallRealMethod().when(logListener).start();
         logListener.start();
@@ -26,7 +26,7 @@ public class LogListenerTest {
     }
 
     @Test
-    public void testProcessNewLogs(){
+    public void testProcessNewLogs() {
         LogListener logListener = mock(LogListener.class);
         logListener.utils = UnitTestUtils.mockUtils();
         doCallRealMethod().when(logListener).processNewLogs();
@@ -36,7 +36,7 @@ public class LogListenerTest {
     }
 
     @Test
-    public void testProcessLogEntries(){
+    public void testProcessLogEntries() {
         LoggingService mockService = mock(LoggingService.class);
         when(mockService.isEnabled()).thenReturn(true);
         List<LoggingService> mockServices = new ArrayList<>();

@@ -27,7 +27,8 @@ import retrofit.mime.TypedString;
  */
 class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
 
-    private String trackingId;
+    String trackingId;
+    GoogleAnalyticsService googleAnalyticsService;
 
     GoogleAnalytics(Context context) {
         super(context);
@@ -46,7 +47,7 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
      */
     @Override
     public boolean isEnabled() {
-        return trackingId != null;
+        return utils.isNotBlank(trackingId);
     }
 
     /**
@@ -60,25 +61,34 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
     /**
      * {@inheritDoc}
      */
-    public void logEvent(Context context, String activityName){
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("https://www.google-analytics.com")
-                .setConverter(new StringConverter())
-                .build();
-
+    public void logEvent(Context context, String event){
         try {
-            String payload = createPayloadData(activityName);
-            GoogleAnalyticsService service = restAdapter.create(GoogleAnalyticsService.class);
-            service.createEvent(payload, new NoOpCallback());
+            String payload = createPayloadData(event);
+            createService().createEvent(payload, new NoOpCallback());
         } catch (Exception ex) {
             utils.logIssue("Could not send google analytics data", ex);
         }
     }
 
     /**
+     * Lazy load instance of {@link GoogleAnalyticsService}
+     * @return Instance of {@link GoogleAnalyticsService}.  Never null.
+     */
+    GoogleAnalyticsService createService() {
+        if(googleAnalyticsService == null) {
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint("https://www.google-analytics.com")
+                    .setConverter(new StringConverter())
+                    .build();
+            googleAnalyticsService = restAdapter.create(GoogleAnalyticsService.class);
+        }
+        return googleAnalyticsService;
+    }
+
+    /**
      * See: https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
      */
-    private String createPayloadData(String activityName){
+    String createPayloadData(String event){
         String payload = null;
         try {
             String androidId = utils.getAndroidId(context);
@@ -92,7 +102,7 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
             data.put("an", utils.getApplicationName(context)); // App name.
             data.put("av", utils.getVersionName(context)); // App version.
             data.put("aid", utils.getApplicationPackageName(context));  // App Id.
-            data.put("cd", activityName); // Screen name / content description.
+            data.put("cd", event); // Screen name / content description.
 
             StringBuilder sb = new StringBuilder(8192); //8192 bytes max
             for (Map.Entry<String, String> entry : data.entrySet()) {

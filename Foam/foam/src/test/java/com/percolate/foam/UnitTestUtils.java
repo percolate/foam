@@ -14,7 +14,7 @@ public class UnitTestUtils {
     /**
      * Setup mock instance of {@link Utils}.
      */
-    public static Utils mockUtils(){
+    public static Utils mockUtils() {
         final Utils mockUtils = mock(Utils.class);
         when(mockUtils.getApplicationName(any(Context.class))).thenReturn("UnitTesting Application");
         when(mockUtils.getAndroidId(any(Context.class))).thenReturn("123456789");

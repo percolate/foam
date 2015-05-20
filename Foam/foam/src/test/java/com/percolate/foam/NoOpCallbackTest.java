@@ -23,7 +23,7 @@ public class NoOpCallbackTest {
      * PowerMockRunner to allow us to mock it.
      */
     @Test
-    public void testSuccess() throws Exception {
+    public void testSuccess() {
         NoOpCallback noOpCallback = new NoOpCallback();
         Response mockResponse = mock(Response.class);
         noOpCallback.success(mockResponse, mockResponse);
@@ -31,7 +31,7 @@ public class NoOpCallbackTest {
     }
 
     @Test
-    public void testFailure() throws Exception {
+    public void testFailure() {
         NoOpCallback noOpCallback = new NoOpCallback();
         RetrofitError mockRetrofitError = mock(RetrofitError.class);
         noOpCallback.failure(mockRetrofitError);

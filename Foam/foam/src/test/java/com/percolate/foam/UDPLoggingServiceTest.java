@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 public class UDPLoggingServiceTest {
 
     @Test
-    public void testEnable() throws Exception {
+    public void testEnable() {
         UDPLoggingService udpLoggingService = new UDPLoggingService(null) {
             @Override
             public ServiceType getServiceType() {
@@ -35,7 +35,7 @@ public class UDPLoggingServiceTest {
     }
 
     @Test
-    public void testEnableBadValues() throws Exception {
+    public void testEnableBadValues() {
         UDPLoggingService udpLoggingService = new UDPLoggingService(null) {
             @Override
             public ServiceType getServiceType() {
@@ -60,7 +60,7 @@ public class UDPLoggingServiceTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testLogEventOneParam() throws Exception {
+    public void testLogEventOneParam() {
         UDPLoggingService mockUDPLoggingService = mock(UDPLoggingService.class);
         doCallRealMethod().when(mockUDPLoggingService).logEvent(anyString());
         mockUDPLoggingService.logEvent("testing single param");
@@ -69,7 +69,7 @@ public class UDPLoggingServiceTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testLogEventTwoParams() throws Exception {
+    public void testLogEventTwoParams() {
         StoredException storedException = new StoredException(null, null, "test_thread", "test\nstack\ntrace");
         UDPLoggingService mockUDPLoggingService = mock(UDPLoggingService.class);
         doCallRealMethod().when(mockUDPLoggingService).logEvent(any(StoredException.class), any(Callback.class));
@@ -79,7 +79,7 @@ public class UDPLoggingServiceTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testSendLogEvent(){
+    public void testSendLogEvent() {
         UDPLoggingService mockUDUdpLoggingService = mock(UDPLoggingService.class);
         mockUDUdpLoggingService.utils = UnitTestUtils.mockUtils();
         Callback mockCallback= mock(Callback.class);
@@ -91,7 +91,7 @@ public class UDPLoggingServiceTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testSendLogEventNulls(){
+    public void testSendLogEventNulls() {
         UDPLoggingService mockUDUdpLoggingService = mock(UDPLoggingService.class);
         mockUDUdpLoggingService.utils = UnitTestUtils.mockUtils();
         Callback mockCallback= mock(Callback.class);

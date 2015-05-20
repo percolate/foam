@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 public class HockeyAppTest {
 
     @Test
-    public void testEnable(){
+    public void testEnable() {
         HockeyApp hockeyApp = new HockeyApp(null);
         assertFalse(hockeyApp.isEnabled());
         hockeyApp.enable("unit_test_api_key");
@@ -43,7 +43,7 @@ public class HockeyAppTest {
     }
 
     @Test
-    public void testEnableBadValues(){
+    public void testEnableBadValues() {
         HockeyApp hockeyApp = new HockeyApp(null);
         assertFalse(hockeyApp.isEnabled());
 
@@ -58,12 +58,12 @@ public class HockeyAppTest {
     }
 
     @Test
-    public void testGetServiceType(){
+    public void testGetServiceType() {
         assertEquals(ServiceType.HOCKEYAPP, new HockeyApp(null).getServiceType());
     }
 
     @Test
-    public void testCreateService(){
+    public void testCreateService() {
         HockeyApp hockeyApp = new HockeyApp(null);
         assertNull(hockeyApp.hockeyAppService);
         hockeyApp.createService();
@@ -76,7 +76,7 @@ public class HockeyAppTest {
     }
 
     @Test
-    public void testGetAppIDFromResponseSimple(){
+    public void testGetAppIDFromResponseSimple() {
         HockeyApp hockeyApp = new HockeyApp(null);
         hockeyApp.utils = UnitTestUtils.mockUtils();
 
@@ -89,7 +89,7 @@ public class HockeyAppTest {
     }
 
     @Test
-    public void testGetAppIDFromResponseComplex(){
+    public void testGetAppIDFromResponseComplex() {
         HockeyApp hockeyApp = new HockeyApp(null);
         hockeyApp.utils = UnitTestUtils.mockUtils();
 
@@ -108,7 +108,7 @@ public class HockeyAppTest {
     }
 
     @Test
-    public void testGetAppIDFromResponseNull(){
+    public void testGetAppIDFromResponseNull() {
         HockeyApp hockeyApp = new HockeyApp(null);
         hockeyApp.utils = UnitTestUtils.mockUtils();
         assertNull(hockeyApp.getAppIDFromResponse(null));
@@ -116,7 +116,7 @@ public class HockeyAppTest {
     }
 
     @Test
-    public void testGetAppIDFromResponseFail(){
+    public void testGetAppIDFromResponseFail() {
         HockeyApp hockeyApp = new HockeyApp(null);
         hockeyApp.utils = UnitTestUtils.mockUtils();
 
@@ -132,7 +132,7 @@ public class HockeyAppTest {
         assertNull(response);
     }
 
-    private HockeyApp.HockeyAppDTO createTestHockeyAppDTO(String platform, String bundleIdentifier, String publicIdentifier){
+    private HockeyApp.HockeyAppDTO createTestHockeyAppDTO(String platform, String bundleIdentifier, String publicIdentifier) {
         HockeyApp.HockeyAppDTO app = new HockeyApp(null).new HockeyAppDTO();
         app.platform = platform;
         app.bundle_identifier = bundleIdentifier;
@@ -142,7 +142,7 @@ public class HockeyAppTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testCreateLogEvent(){
+    public void testCreateLogEvent() {
         final Callback mockLogEventCallback = mock(Callback.class);
         final File tempFile = createTempFile();
 
@@ -172,7 +172,7 @@ public class HockeyAppTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testCreateLogEventCallbackSuccess(){
+    public void testCreateLogEventCallbackSuccess() {
         HockeyApp hockeyApp = new HockeyApp(null);
         Callback mockDeleteStoredExceptionCallback = mock(Callback.class);
         File tempFile = createTempFile();
@@ -186,7 +186,7 @@ public class HockeyAppTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testCreateLogEventCallbackFailure(){
+    public void testCreateLogEventCallbackFailure() {
         HockeyApp hockeyApp = new HockeyApp(null);
         Callback mockDeleteStoredExceptionCallback = mock(Callback.class);
         File tempFile = createTempFile();
@@ -199,7 +199,7 @@ public class HockeyAppTest {
         verify(mockDeleteStoredExceptionCallback).failure(any(RetrofitError.class));
     }
 
-    private File createTempFile(){
+    private File createTempFile() {
         File tempFile = null;
         try {
             tempFile = File.createTempFile("foam-unit-testing", "log");
@@ -210,7 +210,7 @@ public class HockeyAppTest {
     }
 
     @Test
-    public void testWriteHockeyAppCrashLog(){
+    public void testWriteHockeyAppCrashLog() {
         Context mockContext = mock(Context.class);
         File systemTempDir = new File(System.getProperty("java.io.tmpdir"));
         when(mockContext.getCacheDir()).thenReturn(systemTempDir);
