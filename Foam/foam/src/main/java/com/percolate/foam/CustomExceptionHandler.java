@@ -29,7 +29,9 @@ import retrofit.Callback;
 class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     private Context context;
-    private Utils utils;
+
+    /* Utility methods */
+    Utils utils;
 
     /* Services that crashes will be reported to */
     private List<CrashReportingService> services;
@@ -126,7 +128,7 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
     /**
      * Get all stored exceptions.
      */
-    private Map<String, StoredException> getStoredExceptions(){
+    Map<String, StoredException> getStoredExceptions(){
         return exceptionPersister.loadAll();
     }
 

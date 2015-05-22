@@ -11,8 +11,8 @@ import retrofit.client.Response;
  */
 class DeleteFileCallback implements Callback<Object> {
 
-    private final Context context;
-    private final String storedExceptionFileName;
+    final Context context;
+    final String storedExceptionFileName;
     Utils utils;
 
     DeleteFileCallback(Context context, String storedExceptionFileName) {
