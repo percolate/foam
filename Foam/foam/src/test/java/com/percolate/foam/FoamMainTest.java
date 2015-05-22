@@ -22,10 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: PostFormLib
- *
- * @author brent
+ * Foam unit tests for FoamMain.java
  */
 public class FoamMainTest {
 

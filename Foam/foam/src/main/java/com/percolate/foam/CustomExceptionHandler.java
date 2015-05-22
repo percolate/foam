@@ -38,10 +38,10 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
     private boolean wifiOnly;
 
     /* Object used to store exceptions so they can be sent on next launch */
-    private ExceptionPersister exceptionPersister;
+    ExceptionPersister exceptionPersister;
 
     /* ExceptionHandler that was registered before we registered our version */
-    private final Thread.UncaughtExceptionHandler defaultHandler;
+    Thread.UncaughtExceptionHandler defaultHandler;
 
     CustomExceptionHandler(Context context, List<CrashReportingService> crashReportingServices, boolean wifiOnly) {
         this.context = context;
@@ -81,8 +81,8 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
      * @param thread Thread that generated the exception
      * @param ex Exception data.
      */
-    private void storeException(Thread thread, Throwable ex) {
-        String stackTrace = utils.trimToSize(Log.getStackTraceString(ex), 1024);
+    void storeException(Thread thread, Throwable ex) {
+        String stackTrace = utils.trimToSize(getStackTraceString(ex), 1024);
 
         for (Service service : services) {
             if(service.isEnabled()){
@@ -94,6 +94,13 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
                 ));
             }
         }
+    }
+
+    /**
+     * Return String version of the stacktrace for a <code>Throwable</code>.
+     */
+    String getStackTraceString(Throwable ex) {
+        return Log.getStackTraceString(ex);
     }
 
     /**

@@ -64,7 +64,7 @@ class ExceptionPersister {
      * @param fileName File to load
      * @return Re-serialized StoredException object.  Will be null in the event of an error.
      */
-    private @Nullable StoredException loadStoredExceptionData(String fileName) {
+    @Nullable StoredException loadStoredExceptionData(String fileName) {
         StoredException storedException = null;
         FileInputStream in = null;
         try {

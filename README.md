@@ -102,6 +102,7 @@ That's it.  You've just enabled all of these services for your application.  Wel
 - Does you application currently extend MultiDexApplication?  No problem, just use our `FoamMultiDexApplication` version instead.
 - Can't extend `FoamApplication` or `FoamMultiDexApplication` for some reason?  That's fine too.  Make your application class implement our `FoamApp` interface, and add `` to onCreate()
 - If your application may be sending lots of data, you may want to set `wifiOnly = true` on the `@FoamApiKeys` annotation.
+- You can use `FoamEvent#track(Activity activity, String event)` to track custom events.
 
 **Why no Crashlytics?**
 

@@ -15,7 +15,7 @@ public class FoamApplication extends Application implements FoamApp {
     @Override
     public void onCreate() {
         super.onCreate();
-        foamMain = FoamApplicationInit.init(this);
+        foamMain = new FoamApplicationInit(this).init();
     }
 
     /**

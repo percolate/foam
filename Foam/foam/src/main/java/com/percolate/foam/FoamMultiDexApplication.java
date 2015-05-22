@@ -16,7 +16,7 @@ public class FoamMultiDexApplication extends MultiDexApplication implements Foam
     @Override
     public void onCreate() {
         super.onCreate();
-        foamMain = FoamApplicationInit.init(this);
+        foamMain = new FoamApplicationInit(this).init();
     }
 
     /**
