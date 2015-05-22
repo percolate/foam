@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: "jacoco"
 
 android {
     compileSdkVersion 21
@@ -15,7 +16,19 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug{
+            testCoverageEnabled true
+        }
     }
+}
+
+task coverageReport(type: JacocoReport, dependsOn: "testDebug") {
+    classDirectories = fileTree(
+        dir: './build/intermediates/classes/debug',
+        excludes: ['com/percolate/foam/R*.class', 'com/percolate/foam/BuildConfig.class']
+    )
+    sourceDirectories = files(['src/main/java'])
+    executionData = files('build/jacoco/testDebug.exec')
 }
 
 dependencies {
@@ -40,7 +53,5 @@ dependencies {
     testCompile 'org.powermock:powermock-core:1.6.2'
     testCompile 'org.powermock:powermock-module-junit4:1.6.2'
     testCompile 'org.powermock:powermock-api-mockito:1.6.2'
-
-
 
 }
