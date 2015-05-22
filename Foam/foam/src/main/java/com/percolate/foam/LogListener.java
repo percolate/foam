@@ -2,9 +2,9 @@ package com.percolate.foam;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.SystemClock;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,8 @@ class LogListener {
 
     private Context context;
 
+    protected Utils utils;
+
     /* Service that will receive log events */
     private List<LoggingService> services;
 
@@ -27,7 +29,7 @@ class LogListener {
     /**
      * Set to <code>true</code> to stop monitoring logcat output
      */
-    private boolean stop = false;
+    protected boolean stop = false;
 
     /**
      * Frequency to check for new log messages (ms).
@@ -36,6 +38,7 @@ class LogListener {
 
     LogListener(Context context, List<LoggingService> services, boolean wifiOnly){
         this.context = context;
+        this.utils = new Utils();
         this.services = services;
         this.wifiOnly = wifiOnly;
     }
@@ -50,14 +53,12 @@ class LogListener {
     /**
      * In a new thread, continuously check new log messages and process any new errors log messages.
      */
-    private void startMonitoringLogcat() {
+    protected void startMonitoringLogcat() {
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... params) {
                 while(!stop){
-                    List<String> logs = getNewLogs();
-                    processLogEntries(logs);
-                    SystemClock.sleep(pollFrequencyMs);
+                    processNewLogs();
                 }
                 return null;
             }
@@ -65,14 +66,23 @@ class LogListener {
     }
 
     /**
+     * Get & process new logcat messages
+     */
+    protected void processNewLogs() {
+        List<String> logs = getNewLogs();
+        processLogEntries(logs);
+        utils.sleep(pollFrequencyMs);
+    }
+
+    /**
      * Return output from  `logcat -d` (print and exit) command, then clear logcat using `logcat -c`
      *
      * @return New Logcat entries.
      */
-    public List<String> getNewLogs(){
+    List<String> getNewLogs(){
         List<String> logs = new ArrayList<String>();
         try {
-            Process logcatProcess = Runtime.getRuntime().exec(new String[]{"logcat", "-d"});
+            Process logcatProcess = runLogcatCommand("-d");
             InputStreamReader stream = new InputStreamReader(logcatProcess.getInputStream());
             BufferedReader reader = new BufferedReader(stream);
 
@@ -80,21 +90,30 @@ class LogListener {
             while ((line = reader.readLine()) != null){
                 logs.add(line);
             }
-            //-c == clear logs
-            Runtime.getRuntime().exec(new String[]{"logcat", "-c"});
+            runLogcatCommand("-c"); //-c == clear logs
         }
         catch (Exception ex){
-            Utils.logIssue("Error trying to read logcat output", ex);
+            utils.logIssue("Error trying to read logcat output", ex);
         }
         return logs;
+    }
+
+    /**
+     * Execute system <code>logcat</code> command, return the {@see Process} object.
+     * @param commandLineArgs Argument to pass to logcat
+     * @return logcat Process.
+     * @throws IOException If there was an IO problem reading from logcat.
+     */
+    Process runLogcatCommand(String commandLineArgs) throws IOException {
+        return Runtime.getRuntime().exec(new String[]{"logcat", commandLineArgs});
     }
 
     /**
      * Pass all error entries to all enabled services.
      * @param logs Logs to process (check if they are errors, and send them to each enabled service).
      */
-    private void processLogEntries(List<String> logs) {
-        if(!wifiOnly || Utils.isOnWifi(context)) {
+    protected void processLogEntries(List<String> logs) {
+        if(!wifiOnly || utils.isOnWifi(context)) {
             for (String log : logs) {
                 if (log != null && log.startsWith("E")) {
                     for (LoggingService service : services) {

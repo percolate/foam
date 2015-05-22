@@ -24,9 +24,18 @@ class Flurry extends ServiceImpl implements EventTrackingService {
     public void enable(String applicationKey) {
         this.applicationKey = applicationKey;
 
+        if(utils.isNotBlank(this.applicationKey)) {
+            initFlurryAgent();
+        }
+    }
+
+    /**
+     * Perform Flurry setup/init
+     */
+    void initFlurryAgent() {
         //FlurryAgent.setLogEnabled(true);
-        FlurryAgent.setVersionName(Utils.getVersionName(context));
-        FlurryAgent.setUserId(Utils.getAndroidId(context));
+        FlurryAgent.setVersionName(utils.getVersionName(context));
+        FlurryAgent.setUserId(utils.getAndroidId(context));
         FlurryAgent.setCaptureUncaughtExceptions(true);  // Crashes will also be reported
         FlurryAgent.init(context, applicationKey);
     }
@@ -36,7 +45,7 @@ class Flurry extends ServiceImpl implements EventTrackingService {
      */
     @Override
     public boolean isEnabled() {
-        return applicationKey != null;
+        return utils.isNotBlank(applicationKey);
     }
 
     /**
@@ -64,15 +73,24 @@ class Flurry extends ServiceImpl implements EventTrackingService {
      */
     public boolean checkForJar() {
         try {
-            Class.forName("com.flurry.android.FlurryAgent", false, getClass().getClassLoader());
+            checkForClass("com.flurry.android.FlurryAgent");
             return true;
-        } catch (ClassNotFoundException e) {
-            Utils.logIssue("\n\n\nFoam: You must add the FlurryAnalytics-x.x.x.jar file " +
+        } catch (ClassNotFoundException ex) {
+            utils.logIssue("\n\n\nFoam: You must add the FlurryAnalytics-x.x.x.jar file " +
                     "to your application to enable flurry analytics.  This can be found at " +
                     "https://dev.flurry.com under Applications Tab -> Select your application " +
-                    "-> Manage -> 'Download SDK'.\n\n\n", null);
+                    "-> Manage -> 'Download SDK'.\n\n\n", ex);
             return false;
         }
+    }
+
+    /**
+     * Try to load the given class using <code>Class#forName()</code>.
+     * @throws ClassNotFoundException if the class could not be loaded
+     * @param clazz absolute package name for class to load.
+     */
+    void checkForClass(String clazz) throws ClassNotFoundException {
+        Class.forName(clazz, false, getClass().getClassLoader());
     }
 
 }

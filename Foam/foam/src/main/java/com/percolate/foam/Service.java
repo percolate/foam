@@ -10,17 +10,17 @@ interface Service {
      * Enable this service.  Pass in the respective API Key (or similar)
      * @param value API Key (aka, Tracking ID, Application Key, Project Token, etc, etc)
      */
-    public abstract void enable(String value);
+    void enable(String value);
 
     /**
      * This service is enabled
      * @return true if enabled, otherwise false.
      */
-    public abstract boolean isEnabled();
+    boolean isEnabled();
 
     /**
      * Returns on of {@link ServiceType} that corresponds to this service.
      * @return enum.  on of {@link ServiceType}.
      */
-    public abstract ServiceType getServiceType();
+    ServiceType getServiceType();
 }

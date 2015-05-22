@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,9 +26,11 @@ import java.util.Random;
 class ExceptionPersister {
 
     private Context context;
+    Utils utils;
 
     public ExceptionPersister(Context context){
         this.context = context;
+        this.utils = new Utils();
     }
 
     /**
@@ -37,12 +40,12 @@ class ExceptionPersister {
      * @return Map containing &lt;file name, exception data&gt;.
      */
     public Map<String, StoredException> loadAll(){
-        Map<String, StoredException> storedExceptions = new HashMap<String, StoredException>();
+        Map<String, StoredException> storedExceptions = new HashMap<>();
 
         String[] fileNames = context.fileList();
         if(fileNames != null) {
             for (String fileName : fileNames) {
-                if(Utils.isNotBlank(fileName) && fileName.startsWith("FoamStoredException")) {
+                if(utils.isNotBlank(fileName) && fileName.startsWith("FoamStoredException")) {
                     StoredException storedException = loadStoredExceptionData(fileName);
                     if(storedException != null) {
                         storedExceptions.put(fileName, storedException);
@@ -62,7 +65,7 @@ class ExceptionPersister {
      * @param fileName File to load
      * @return Re-serialized StoredException object.  Will be null in the event of an error.
      */
-    private @Nullable StoredException loadStoredExceptionData(String fileName) {
+    @Nullable StoredException loadStoredExceptionData(String fileName) {
         StoredException storedException = null;
         FileInputStream in = null;
         try {
@@ -73,17 +76,25 @@ class ExceptionPersister {
                 storedException = gson.fromJson(reader, StoredException.class);
             }
         } catch (Exception ex) {
-            Utils.logIssue("Could not load file [" + fileName + "]", ex);
+            utils.logIssue("Could not load file [" + fileName + "]", ex);
         } finally {
-            try {
-                if(in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                Utils.logIssue("Could not close exception storage file.", ex);
-            }
+            closeStream(in);
         }
         return storedException;
+    }
+
+    /**
+     * Attempt to close given FileInputStream.  Checks for null.  Exceptions are logged.
+     * @param closeable Input steam to close.
+     */
+    void closeStream(Closeable closeable) {
+        try {
+            if(closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException ex) {
+            utils.logIssue("Could not close exception storage file.", ex);
+        }
     }
 
     /**
@@ -109,15 +120,9 @@ class ExceptionPersister {
             writer.write(json);
             writer.flush();
         } catch (Exception ex) {
-            Utils.logIssue("Could not write exception to a file.", ex);
+            utils.logIssue("Could not write exception to a file.", ex);
         } finally {
-            try {
-                if(out != null) {
-                    out.close();
-                }
-            } catch (IOException ex) {
-                Utils.logIssue("Could not close exception storage file.", ex);
-            }
+            closeStream(out);
         }
     }
 

@@ -10,7 +10,7 @@ import android.content.Context;
  * the event.
  *
  * Example Usage:
- * <code>FoamEvent.track(this, "my-custom-event")</code>
+ * <code>new FoamEvent().track(this, "my-custom-event")</code>
  *
  */
 public class FoamEvent {
@@ -22,7 +22,7 @@ public class FoamEvent {
      * @param activity Activity on which the event occurred.
      * @param event Your custom event string.
      */
-    public static void track(Activity activity, String event){
+    public void track(Activity activity, String event){
         if(activity != null) {
             track(activity.getApplication(), activity, event);
         }
@@ -35,7 +35,7 @@ public class FoamEvent {
      * @param service Service in which the event occurred.
      * @param event Your custom event string.
      */
-    public static void track(android.app.Service service, String event){
+    public void track(android.app.Service service, String event){
         if(service != null) {
             track(service.getApplication(), service, event);
         }
@@ -44,7 +44,7 @@ public class FoamEvent {
     /**
      * Track custom event
      */
-    private static void track(Application application, Context context, String event) {
+    void track(Application application, Context context, String event) {
         if(application != null && application instanceof FoamApp){
             FoamMain foamMain = ((FoamApp) application).getFoamMain();
             if(foamMain != null){

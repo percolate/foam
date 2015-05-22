@@ -11,12 +11,14 @@ import retrofit.client.Response;
  */
 class DeleteFileCallback implements Callback<Object> {
 
-    private final Context context;
-    private final String storedExceptionFileName;
+    final Context context;
+    final String storedExceptionFileName;
+    Utils utils;
 
     DeleteFileCallback(Context context, String storedExceptionFileName) {
         this.context = context;
         this.storedExceptionFileName = storedExceptionFileName;
+        this.utils = new Utils();
     }
 
     /**
@@ -27,7 +29,7 @@ class DeleteFileCallback implements Callback<Object> {
         try {
             context.deleteFile(storedExceptionFileName);
         } catch(Exception ex){
-            Utils.logIssue("Could not ", ex);
+            utils.logIssue("Could not delete file [" + storedExceptionFileName + "]", ex);
         }
     }
 
@@ -36,6 +38,6 @@ class DeleteFileCallback implements Callback<Object> {
      */
     @Override
     public void failure(RetrofitError error) {
-        Utils.logIssue("RetrofitError in DeleteFileCallback.  File: [" + storedExceptionFileName + "]", error);
+        utils.logIssue("RetrofitError in DeleteFileCallback.  File: [" + storedExceptionFileName + "]", error);
     }
 }

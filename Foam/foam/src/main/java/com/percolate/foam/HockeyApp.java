@@ -24,15 +24,13 @@ import retrofit.http.Path;
 import retrofit.mime.TypedFile;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * {@inheritDoc}
  */
 class HockeyApp extends ServiceImpl implements CrashReportingService {
 
     private String apiKey;
     private SimpleDateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.US);
+    protected HockeyAppService hockeyAppService;
 
     HockeyApp(Context context) {
         super(context);
@@ -51,7 +49,7 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
      */
     @Override
     public boolean isEnabled() {
-        return apiKey != null;
+        return utils.isNotBlank(apiKey);
     }
 
     /**
@@ -66,33 +64,42 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
      * {@inheritDoc}
      */
     public void logEvent(final StoredException storedException, final Callback<Object> deleteStoredExceptionCallback) {
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("https://rink.hockeyapp.net")
-                .build();
-
-        final HockeyAppService service = restAdapter.create(HockeyAppService.class);
-
-        service.getApps(apiKey, new Callback<HockeyAppsDTO>() {
+        createService().getApps(apiKey, new Callback<HockeyAppsDTO>() {
             @Override
             public void success(HockeyAppsDTO appsList, Response response) {
                 String appId = getAppIDFromResponse(appsList);
-                if (Utils.isNotBlank(appId)) {
-                    createLogEvent(appId, service, storedException, deleteStoredExceptionCallback);
+                if (utils.isNotBlank(appId)) {
+                    createLogEvent(appId, storedException, deleteStoredExceptionCallback);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Utils.logIssue("Error getting hockeyapp list of apps", error);
+                utils.logIssue("Error getting HockeyApp list of apps", error);
             }
         });
     }
 
     /**
+     * Lazy load instance of {@link HockeyAppService}
+     * @return Instance of {@link HockeyAppService}.  Never null.
+     */
+    public HockeyAppService createService(){
+        if(hockeyAppService == null) {
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint("https://rink.hockeyapp.net")
+                    .build();
+
+            hockeyAppService = restAdapter.create(HockeyAppService.class);
+        }
+        return hockeyAppService;
+    }
+
+    /**
      * Return `apps[].public_identifier` for app where app.bundle_identifier == <package-name>
      */
-    private String getAppIDFromResponse(HockeyAppsDTO appsList) {
-        final String applicationPackageName = Utils.getApplicationPackageName(context);
+    protected String getAppIDFromResponse(HockeyAppsDTO appsList) {
+        final String applicationPackageName = utils.getApplicationPackageName(context);
         String hockeyAppApplicationId = null;
         if (appsList != null && appsList.apps != null && !appsList.apps.isEmpty()) {
             for (HockeyAppDTO app : appsList.apps) {
@@ -113,66 +120,96 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
      * HockeyApp requires data to be in files uploaded via multipart POST request.
      * Here we create a file containing the log data.
      * @param appId HockeyApp application ID
-     * @param service Instance of our Retrofit HockeyAppService.
      * @param storedException Data to place in a log file.
      * @param deleteStoredExceptionCallback Retrofit callback that will delete the exception file
      *                                      after it is uploaded.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void createLogEvent(String appId, HockeyAppService service,
-                                StoredException storedException,
+    void createLogEvent(String appId, StoredException storedException,
                                 final Callback<Object> deleteStoredExceptionCallback) {
-
         final File logFile = writeHockeyAppCrashLog(storedException.stackTrace);
         if(logFile != null && logFile.exists()) {
             final TypedFile log = new TypedFile("text/plain", logFile);
-            service.createEvent(appId, log, new Callback<Response>() {
-                @Override
-                public void success(Response resp, Response response) {
-                    logFile.delete();
-                    deleteStoredExceptionCallback.success(resp, response);
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    logFile.delete();
-                    deleteStoredExceptionCallback.failure(error);
-                }
-            });
+            createService().createEvent(
+                appId,
+                log,
+                createLogEventCallback(deleteStoredExceptionCallback, logFile)
+            );
         }
     }
 
     /**
-     * Write log file in hockeyapps required format
+     * Callback that executes after we send data to HockeyApp.
+     * Successful calls to HockeyApp will result in us removing the backing error & temp files.
+     * Failed calls to HockeyApp will remove temp files, but leave error files.
+     *
+     * @param deleteStoredExceptionCallback Callback to remove backing error file.
+     * @param logFile Temp log file containing data sent to HockeyApp.
+     * @return Retrofit callback with implemented success/failure methods.
+     */
+    Callback<Response> createLogEventCallback(final Callback<Object> deleteStoredExceptionCallback, final File logFile) {
+        return new Callback<Response>() {
+            @Override
+            public void success(Response resp, Response response) {
+                if(!logFile.delete()){
+                    utils.logIssue("Unable to clean up temp HockeyApp file", null);
+                }
+                if(deleteStoredExceptionCallback != null) {
+                    deleteStoredExceptionCallback.success(resp, response);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if(!logFile.delete()){
+                    utils.logIssue("Unable to clean up temp HockeyApp file", null);
+                }
+                if(deleteStoredExceptionCallback != null) {
+                    deleteStoredExceptionCallback.failure(error);
+                }
+            }
+        };
+    }
+
+    /**
+     * Write log file in format expected by hockey app.
      * see http://support.hockeyapp.net/kb/api/api-crashes#post-custom-crashes
      */
-    private File writeHockeyAppCrashLog(String stackTrace) {
+    File writeHockeyAppCrashLog(String stackTrace) {
         File logFile = null;
         BufferedWriter writer;
         try {
             File outputDir = context.getCacheDir();
             logFile = File.createTempFile("hockey_app_crash_", ".log", outputDir);
             writer = new BufferedWriter(new FileWriter(logFile));
-            writer.write("Package: " + Utils.getApplicationPackageName(context) + "\n");
-            writer.write("Version Code: " + Utils.getVersionCode(context) + "\n");
-            writer.write("Version Name: " + Utils.getVersionName(context) + "\n");
+            writer.write("Package: " + utils.getApplicationPackageName(context) + "\n");
+            writer.write("Version Code: " + utils.getVersionCode(context) + "\n");
+            writer.write("Version Name: " + utils.getVersionName(context) + "\n");
             writer.write("Android: " + Build.VERSION.RELEASE + "\n");
             writer.write("Manufacturer: " + Build.MANUFACTURER + "\n");
             writer.write("Model: " + Build.MODEL + "\n");
-            writer.write("Date: " + df.format(new Date()) + "\n");
+            writer.write("Date: " + getTimestamp() + "\n");
             writer.write("\n");
             writer.write(stackTrace);
             writer.close();
         } catch (Exception ex) {
-            Utils.logIssue("Error witting crash report to temp log file", ex);
+            utils.logIssue("Error writing crash report to temp log file", ex);
         }
         return logFile;
     }
 
     /**
-     * Retrofit service
+     * Return current date & time in format expected by HockeyApp
+     * @return timestamp in HockeyApp log file format.
      */
-    private interface HockeyAppService {
+    String getTimestamp(){
+        return df.format(new Date());
+    }
+
+    /**
+     * Retrofit hockeyAppService
+     */
+    protected interface HockeyAppService {
 
         @GET("/api/2/apps")
         void getApps(@Header("X-HockeyAppToken") String apiKey,
@@ -191,7 +228,7 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
     /**
      * Object representation of JSON returned from HockeyApp
      */
-    private class HockeyAppsDTO {
+    class HockeyAppsDTO {
         List<HockeyAppDTO> apps;
     }
 
@@ -199,7 +236,7 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
      * Object representation of JSON returned from HockeyApp
      */
     @SuppressWarnings("UnusedDeclaration")
-    private class HockeyAppDTO {
+    class HockeyAppDTO {
         protected Integer id;
         protected String bundle_identifier;
         protected String public_identifier;

@@ -8,23 +8,31 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
+ * Foam Main class.  Contains logic to initialize, start, and run Foam for an applicatition.
+ * This class should be started by {@link FoamApplicationInit}.
  *
- * @author brent
+ * To add new services to foam, modify {@link #init(FoamApiKeys)} to add your new service
+ * to our <code>services</code> map, then modify {@link #initializeServices()} to pass the
+ * correct API key to the service.  More details can be found in the README / wiki.
  */
 class FoamMain {
 
     private Context context;
-
+    
     /* Annotation on Application class containing service API Keys */
-    private FoamApiKeys foamApiKeys;
+    FoamApiKeys foamApiKeys;
 
     /* Services that will receive events */
-    private Map<ServiceType, Service> services = new HashMap<>();
+    Map<ServiceType, Service> services = new HashMap<>();
 
-    /* Event tracking class.  Used to track all Activity entries (onResume) and custom events */
-    private EventTracker eventTracker;
+    /* Event tracking class.  Used to track all Activity entries (onResume) and custom events. */
+    EventTracker eventTracker;
+
+    /* Custom Exception handler class.  Used to capture, store, and send any uncaught exceptions. */
+    CustomExceptionHandler customExceptionHandler;
+
+    /* Class that monitors logcat output.  Error logs will be processed by appropriate services. */
+    LogListener logListener;
 
     FoamMain(Context context){
         this.context = context;
@@ -60,7 +68,7 @@ class FoamMain {
      * Loop through all services.  If there is a corrisponding API key defined in FoamApiKeys,
      * then enable the service using that key.  Otherwise service will remain disabled.
      */
-    private void initializeServices() {
+    void initializeServices() {
         for (Map.Entry<ServiceType, Service> entry : services.entrySet()) {
             ServiceType serviceType = entry.getKey();
             Service service = entry.getValue();
@@ -86,7 +94,7 @@ class FoamMain {
                 apiKey = foamApiKeys.graphite();
             }
 
-            if(Utils.isNotBlank(apiKey)){
+            if(new Utils().isNotBlank(apiKey)){
                 service.enable(apiKey);
             }
 
@@ -97,10 +105,12 @@ class FoamMain {
      * Start Foam custom exception handler class.
      * {@see CustomExceptionHandler}
      */
-    private void startCustomExceptionHandler() {
+    void startCustomExceptionHandler() {
         List<CrashReportingService> services = getEnabledServicesForType(CrashReportingService.class);
-        if(!services.isEmpty()) {
-            CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler(context, services, foamApiKeys.wifiOnly());
+        if(services != null && !services.isEmpty()) {
+            if(customExceptionHandler == null) {
+                customExceptionHandler = new CustomExceptionHandler(context, services, foamApiKeys.wifiOnly());
+            }
             customExceptionHandler.start();
         }
     }
@@ -109,10 +119,12 @@ class FoamMain {
      * Start Foam log listener class.
      * {@see LogListener}
      */
-    private void startLogListener() {
+    void startLogListener() {
         List<LoggingService> services = getEnabledServicesForType(LoggingService.class);
-        if(!services.isEmpty()) {
-            LogListener logListener = new LogListener(context, services, foamApiKeys.wifiOnly());
+        if(services != null && !services.isEmpty()) {
+            if(logListener == null) {
+                logListener = new LogListener(context, services, foamApiKeys.wifiOnly());
+            }
             logListener.start();
         }
     }
@@ -121,10 +133,12 @@ class FoamMain {
      * Start Foam event tracker.
      * {@see EventTracker}
      */
-    private void startEventTracker(){
+    void startEventTracker(){
         List<EventTrackingService> services = getEnabledServicesForType(EventTrackingService.class);
-        if(!services.isEmpty()) {
-            eventTracker = new EventTracker(context, services, foamApiKeys.wifiOnly());
+        if(services != null && !services.isEmpty()) {
+            if(eventTracker == null) {
+                eventTracker = new EventTracker(context, services, foamApiKeys.wifiOnly());
+            }
             eventTracker.start();
         }
     }
@@ -140,12 +154,14 @@ class FoamMain {
      * @return List of <T>.  This is a list of all Services that are of the pass in interface type.
      */
     @SuppressWarnings("unchecked")
-    private <T extends Service> List<T> getEnabledServicesForType(Class<T> clazz) {
+    <T extends Service> List<T> getEnabledServicesForType(Class<T> clazz) {
         List<T> servicesOfType = new ArrayList<>();
-        for (Service service : services.values()) {
-            if(clazz.isAssignableFrom(service.getClass())){
-                if(service.isEnabled()) {
-                    servicesOfType.add((T) service);
+        if(services != null && !services.isEmpty()) {
+            for (Service service : services.values()) {
+                if (clazz.isAssignableFrom(service.getClass())) {
+                    if (service.isEnabled()) {
+                        servicesOfType.add((T) service);
+                    }
                 }
             }
         }

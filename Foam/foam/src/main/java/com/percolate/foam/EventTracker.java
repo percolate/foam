@@ -21,6 +21,8 @@ class EventTracker {
 
     private Context context;
 
+    Utils utils;
+
     /* Services that will receive tracking events */
     private List<EventTrackingService> services;
 
@@ -29,6 +31,7 @@ class EventTracker {
 
     public EventTracker(Context context, List<EventTrackingService> services, boolean wifiOnly) {
         this.context = context;
+        this.utils = new Utils();
         this.services = services;
         this.wifiOnly = wifiOnly;
     }
@@ -42,7 +45,7 @@ class EventTracker {
                     createActivityLifecycleCallback()
             );
         } else {
-            Utils.logIssue("EventTracker could not start.  Context is not an Application", null);
+            utils.logIssue("EventTracker could not start.  Context is not of type Application", null);
         }
     }
 
@@ -50,7 +53,7 @@ class EventTracker {
      * Create and return a ActivityLifecycleCallbacks object that tracks all onActivityResumed
      * method calls for all activities.
      */
-    private Application.ActivityLifecycleCallbacks createActivityLifecycleCallback() {
+    Application.ActivityLifecycleCallbacks createActivityLifecycleCallback() {
         return new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityResumed(Activity activity) {
@@ -69,7 +72,7 @@ class EventTracker {
     /**
      * Pass activity name to services for Activities that should be tracked.
      */
-    private void trackActivity(Activity activity) {
+    void trackActivity(Activity activity) {
         if(shouldTrack(activity)) {
             String activityName = activity.getClass().getSimpleName();
             trackEvent(activity, activityName);
@@ -81,7 +84,7 @@ class EventTracker {
      * @param context Context
      * @param event Event to track.
      */
-    protected void trackEvent(Context context, String event) {
+    void trackEvent(Context context, String event) {
         for (EventTrackingService service : services) {
             if (service.isEnabled()) {
                 service.logEvent(context, event);
@@ -93,8 +96,8 @@ class EventTracker {
      * Check for classes with @FoamDontTrack annotation.
      * @return true if Activity does not have FoamDontTrack (on class on any of the methods)
      */
-    private boolean shouldTrack(Activity activity) {
-        if(wifiOnly && !Utils.isOnWifi(context)){
+    boolean shouldTrack(Activity activity) {
+        if(wifiOnly && !utils.isOnWifi(context)){
             return false;
         } else if(activity!=null){
             Class<? extends Activity> clazz = activity.getClass();
@@ -108,7 +111,6 @@ class EventTracker {
                 }
             }
         }
-
         return true;
     }
 

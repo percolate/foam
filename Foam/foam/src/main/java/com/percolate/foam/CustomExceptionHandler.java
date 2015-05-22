@@ -30,6 +30,9 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     private Context context;
 
+    /* Utility methods */
+    Utils utils;
+
     /* Services that crashes will be reported to */
     private List<CrashReportingService> services;
 
@@ -37,13 +40,14 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
     private boolean wifiOnly;
 
     /* Object used to store exceptions so they can be sent on next launch */
-    private ExceptionPersister exceptionPersister;
+    ExceptionPersister exceptionPersister;
 
     /* ExceptionHandler that was registered before we registered our version */
-    private final Thread.UncaughtExceptionHandler defaultHandler;
+    Thread.UncaughtExceptionHandler defaultHandler;
 
     CustomExceptionHandler(Context context, List<CrashReportingService> crashReportingServices, boolean wifiOnly) {
         this.context = context;
+        this.utils = new Utils();
         this.services = crashReportingServices;
         this.wifiOnly = wifiOnly;
         this.defaultHandler = Thread.getDefaultUncaughtExceptionHandler();
@@ -79,8 +83,8 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
      * @param thread Thread that generated the exception
      * @param ex Exception data.
      */
-    private void storeException(Thread thread, Throwable ex) {
-        String stackTrace = Utils.trimToSize(Log.getStackTraceString(ex), 1024);
+    void storeException(Thread thread, Throwable ex) {
+        String stackTrace = utils.trimToSize(getStackTraceString(ex), 1024);
 
         for (Service service : services) {
             if(service.isEnabled()){
@@ -95,11 +99,18 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
     }
 
     /**
+     * Return String version of the stacktrace for a <code>Throwable</code>.
+     */
+    String getStackTraceString(Throwable ex) {
+        return Log.getStackTraceString(ex);
+    }
+
+    /**
      * Iterate through any stored exception files that have not been successfully sent.  Send
      * them to their corresponding service.
      */
     public void sendStoredExceptions(){
-        if(!wifiOnly || Utils.isOnWifi(context)) {
+        if(!wifiOnly || utils.isOnWifi(context)) {
             for (Map.Entry<String, StoredException> entry : getStoredExceptions().entrySet()) {
                 String fileName = entry.getKey();
                 StoredException storedException = entry.getValue();
@@ -117,7 +128,7 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
     /**
      * Get all stored exceptions.
      */
-    private Map<String, StoredException> getStoredExceptions(){
+    Map<String, StoredException> getStoredExceptions(){
         return exceptionPersister.loadAll();
     }
 

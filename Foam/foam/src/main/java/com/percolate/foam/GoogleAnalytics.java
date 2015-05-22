@@ -23,14 +23,12 @@ import retrofit.mime.TypedOutput;
 import retrofit.mime.TypedString;
 
 /**
- * Copyright (c) 2015 Percolate Industries Inc. All rights reserved.
- * Project: Foam
- *
- * @author brent
+ * {@inheritDoc}
  */
 class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
 
-    private String trackingId;
+    String trackingId;
+    GoogleAnalyticsService googleAnalyticsService;
 
     GoogleAnalytics(Context context) {
         super(context);
@@ -49,7 +47,7 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
      */
     @Override
     public boolean isEnabled() {
-        return trackingId != null;
+        return utils.isNotBlank(trackingId);
     }
 
     /**
@@ -63,28 +61,37 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
     /**
      * {@inheritDoc}
      */
-    public void logEvent(Context context, String activityName){
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("https://www.google-analytics.com")
-                .setConverter(new StringConverter())
-                .build();
-
+    public void logEvent(Context context, String event){
         try {
-            String payload = createPayloadData(activityName);
-            GoogleAnalyticsService service = restAdapter.create(GoogleAnalyticsService.class);
-            service.createEvent(payload, new NoOpCallback());
+            String payload = createPayloadData(event);
+            createService().createEvent(payload, new NoOpCallback());
         } catch (Exception ex) {
-            Utils.logIssue("Could not send google analytics data", ex);
+            utils.logIssue("Could not send google analytics data", ex);
         }
+    }
+
+    /**
+     * Lazy load instance of {@link GoogleAnalyticsService}
+     * @return Instance of {@link GoogleAnalyticsService}.  Never null.
+     */
+    GoogleAnalyticsService createService() {
+        if(googleAnalyticsService == null) {
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint("https://www.google-analytics.com")
+                    .setConverter(new StringConverter())
+                    .build();
+            googleAnalyticsService = restAdapter.create(GoogleAnalyticsService.class);
+        }
+        return googleAnalyticsService;
     }
 
     /**
      * See: https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
      */
-    private String createPayloadData(String activityName){
+    String createPayloadData(String event){
         String payload = null;
         try {
-            String androidId = Utils.getAndroidId(context);
+            String androidId = utils.getAndroidId(context);
             UUID deviceUUID = UUID.nameUUIDFromBytes(androidId.getBytes("utf8"));
 
             Map<String, String> data = new LinkedHashMap<String, String>();
@@ -92,10 +99,10 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
             data.put("tid", this.trackingId); // Tracking ID / Property ID.
             data.put("cid", deviceUUID.toString()); // Anonymous Client ID.
             data.put("t", "screenview"); // Hit Type.
-            data.put("an", Utils.getApplicationName(context)); // App name.
-            data.put("av", Utils.getVersionName(context)); // App version.
-            data.put("aid", Utils.getApplicationPackageName(context));  // App Id.
-            data.put("cd", activityName); // Screen name / content description.
+            data.put("an", utils.getApplicationName(context)); // App name.
+            data.put("av", utils.getVersionName(context)); // App version.
+            data.put("aid", utils.getApplicationPackageName(context));  // App Id.
+            data.put("cd", event); // Screen name / content description.
 
             StringBuilder sb = new StringBuilder(8192); //8192 bytes max
             for (Map.Entry<String, String> entry : data.entrySet()) {
@@ -108,9 +115,9 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
 
             payload = new String(sb.toString().getBytes(), "UTF-8");
         } catch (UnsupportedEncodingException ex) {
-            Utils.logIssue("Encoding exception", ex);
+            utils.logIssue("Encoding exception", ex);
         } catch(Exception ex){
-            Utils.logIssue("Error creating google analytics payload data", ex);
+            utils.logIssue("Error creating google analytics payload data", ex);
         }
         return payload;
     }

@@ -8,18 +8,41 @@ import android.app.Application;
  */
 class FoamApplicationInit {
 
+    FoamMain foamMain;
+    Application application;
+    Utils utils;
+
+    public FoamApplicationInit(Application application){
+        this.foamMain = new FoamMain(application);
+        this.application = application;
+        this.utils = new Utils();
+    }
+
     /**
      * Get API keys from FoamApiKeys annotation and start up our {@link FoamMain} class
      */
-    public static FoamMain init(Application application){
-        FoamMain foamMain = new FoamMain(application);
-        if(application.getClass().isAnnotationPresent(FoamApiKeys.class)){
-            foamMain = new FoamMain(application);
-            FoamApiKeys foamApiKeys = application.getClass().getAnnotation(FoamApiKeys.class);
-            foamMain.init(foamApiKeys);
-            foamMain.start();
+    public FoamMain init(){
+        if(application != null) {
+            FoamApiKeys foamApiKeys = getFoamApiKeys();
+            if (foamApiKeys != null) {
+                foamMain.init(foamApiKeys);
+                foamMain.start();
+            } else {
+                utils.logIssue("Please add @FoamApiKeys to " + application.getClass().getName(), null);
+            }
         }
         return foamMain;
+    }
+
+    /**
+     * Get API keys from Annotated <code>Application</code> class
+     * @return FoamApiKeys
+     */
+    FoamApiKeys getFoamApiKeys() {
+        if(application.getClass().isAnnotationPresent(FoamApiKeys.class)) {
+            return application.getClass().getAnnotation(FoamApiKeys.class);
+        }
+        return null;
     }
 
 }
