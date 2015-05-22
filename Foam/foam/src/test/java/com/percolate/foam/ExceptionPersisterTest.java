@@ -7,9 +7,12 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -116,6 +122,38 @@ public class ExceptionPersisterTest {
         assertEquals("unit\ntesting\nstack\ntrace", response.stackTrace);
 
         assertTrue("Unable to clean up unit testing temp file [" + tempFile.getAbsolutePath() + "].", tempFile.delete());
+    }
+
+    @Test
+    public void testLoadStoredExceptionDataException() throws FileNotFoundException {
+        Context mockContext = mock(Context.class);
+        Utils mockUtils = mock(Utils.class);
+        Exception exceptionToThrow = new RuntimeException("Unit Testing");
+        when(mockContext.openFileInput(anyString())).thenThrow(exceptionToThrow);
+        ExceptionPersister exceptionPersister = new ExceptionPersister(mockContext);
+        exceptionPersister.utils = mockUtils;
+        exceptionPersister.loadStoredExceptionData("some_file.txt");
+        verify(mockUtils).logIssue(eq("Could not load file [some_file.txt]"), eq(exceptionToThrow));
+    }
+
+    @Test
+    public void testCloseStream() throws IOException {
+        InputStream mockInputStream = mock(InputStream.class);
+        ExceptionPersister exceptionPersister = new ExceptionPersister(null);
+        exceptionPersister.closeStream(mockInputStream);
+        verify(mockInputStream).close();
+    }
+
+    @Test
+    public void testcloseStreamException() throws IOException {
+        OutputStream mockOutputStream = mock(OutputStream.class);
+        Utils mockUtils = mock(Utils.class);
+        Exception exceptionToThrow = new IOException("Unit Testing");
+        doThrow(exceptionToThrow).when(mockOutputStream).close();
+        ExceptionPersister exceptionPersister = new ExceptionPersister(null);
+        exceptionPersister.utils = mockUtils;
+        exceptionPersister.closeStream(mockOutputStream);
+        verify(mockUtils).logIssue(eq("Could not close exception storage file."), eq(exceptionToThrow));
     }
 
     @Test

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,10 +79,10 @@ class LogListener {
      *
      * @return New Logcat entries.
      */
-    public List<String> getNewLogs(){
+    List<String> getNewLogs(){
         List<String> logs = new ArrayList<String>();
         try {
-            Process logcatProcess = Runtime.getRuntime().exec(new String[]{"logcat", "-d"});
+            Process logcatProcess = runLogcatCommand("-d");
             InputStreamReader stream = new InputStreamReader(logcatProcess.getInputStream());
             BufferedReader reader = new BufferedReader(stream);
 
@@ -89,13 +90,22 @@ class LogListener {
             while ((line = reader.readLine()) != null){
                 logs.add(line);
             }
-            //-c == clear logs
-            Runtime.getRuntime().exec(new String[]{"logcat", "-c"});
+            runLogcatCommand("-c"); //-c == clear logs
         }
         catch (Exception ex){
             utils.logIssue("Error trying to read logcat output", ex);
         }
         return logs;
+    }
+
+    /**
+     * Execute system <code>logcat</code> command, return the {@see Process} object.
+     * @param commandLineArgs Argument to pass to logcat
+     * @return logcat Process.
+     * @throws IOException If there was an IO problem reading from logcat.
+     */
+    Process runLogcatCommand(String commandLineArgs) throws IOException {
+        return Runtime.getRuntime().exec(new String[]{"logcat", commandLineArgs});
     }
 
     /**

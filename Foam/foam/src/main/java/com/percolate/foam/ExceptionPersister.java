@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,7 +26,7 @@ import java.util.Random;
 class ExceptionPersister {
 
     private Context context;
-    private Utils utils;
+    Utils utils;
 
     public ExceptionPersister(Context context){
         this.context = context;
@@ -77,15 +78,23 @@ class ExceptionPersister {
         } catch (Exception ex) {
             utils.logIssue("Could not load file [" + fileName + "]", ex);
         } finally {
-            try {
-                if(in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                utils.logIssue("Could not close exception storage file.", ex);
-            }
+            closeStream(in);
         }
         return storedException;
+    }
+
+    /**
+     * Attempt to close given FileInputStream.  Checks for null.  Exceptions are logged.
+     * @param closeable Input steam to close.
+     */
+    void closeStream(Closeable closeable) {
+        try {
+            if(closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException ex) {
+            utils.logIssue("Could not close exception storage file.", ex);
+        }
     }
 
     /**
@@ -113,13 +122,7 @@ class ExceptionPersister {
         } catch (Exception ex) {
             utils.logIssue("Could not write exception to a file.", ex);
         } finally {
-            try {
-                if(out != null) {
-                    out.close();
-                }
-            } catch (IOException ex) {
-                utils.logIssue("Could not close exception storage file.", ex);
-            }
+            closeStream(out);
         }
     }
 
