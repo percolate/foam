@@ -63,7 +63,7 @@ That's it.  You've just enabled all of these services for your application.  Wel
 
         <uses-permission android:name="android.permission.INTERNET" />
 
-1. At least min API level 14 in `build.gradle`:
+1. SDK level 14 or higher in `build.gradle`:
 
         minSdkVersion 14
 
@@ -98,9 +98,9 @@ That's it.  You've just enabled all of these services for your application.  Wel
 ## Notes:
 
 - It takes time for some services to process incoming data.  There may be a delay of few hours before anything shows up.  Be patient.
-- Like other crash reporting tools, crashes are sent when the user reopens the app after a crash.  Keeping an app open to send data during a crash would lead to other problems, such as ARNs.
+- Like other crash reporting tools, crashes are sent when the user reopens the app after a crash.  Keeping an app open to send data during a crash would lead to other problems, such as ANRs.
 - Does you application currently extend MultiDexApplication?  No problem, just use our `FoamMultiDexApplication` version instead.
-- Can't extend `FoamApplication` or `FoamMultiDexApplication` for some reason?  That's fine too.  Make your application class implement our `FoamApp` interface, and add `` to onCreate()
+- Can't extend `FoamApplication` or `FoamMultiDexApplication` for some reason?  That's fine too.  Make your application class implement our `FoamApp` interface, and create an instance of `FoamMain` in `onCreate`.  See [FoamApplication.java](https://github.com/percolate/foam/blob/master/Foam/foam/src/main/java/com/percolate/foam/FoamApplication.java) for an example.
 - If your application may be sending lots of data, you may want to set `wifiOnly = true` on the `@FoamApiKeys` annotation.
 - You can use `FoamEvent#track(Activity activity, String event)` to track custom events.
 - You can use `FoamDisabler#disable()` to disable Foam, and `FoamDisabler#reenable()` to turn it back on.  Useful to hook up to a "Do not track" user setting.
