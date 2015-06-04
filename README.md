@@ -103,6 +103,7 @@ That's it.  You've just enabled all of these services for your application.  Wel
 - Can't extend `FoamApplication` or `FoamMultiDexApplication` for some reason?  That's fine too.  Make your application class implement our `FoamApp` interface, and add `` to onCreate()
 - If your application may be sending lots of data, you may want to set `wifiOnly = true` on the `@FoamApiKeys` annotation.
 - You can use `FoamEvent#track(Activity activity, String event)` to track custom events.
+- You can use `FoamDisabler#disable()` to disable Foam, and `FoamDisabler#reenable()` to turn it back on.  Useful to hook up to a "Do not track" user setting.
 
 **Why no Crashlytics?**
 

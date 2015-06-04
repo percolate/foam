@@ -16,9 +16,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -39,7 +41,7 @@ public class FoamMainTest {
     }
 
     @Test
-    public void testStart() {
+    public void testInitializeServices() {
         Flurry flurryMock = mock(Flurry.class);
         when(flurryMock.checkForJar()).thenReturn(true);
 
@@ -111,6 +113,26 @@ public class FoamMainTest {
     }
 
     @Test
+    public void testStartCustomExceptionHandlerAlreadyRunning() {
+        final List<CrashReportingService> mockServices = new ArrayList<>();
+        mockServices.add(new HockeyApp(null));
+
+        FoamMain foamMain = new FoamMain(null){
+            @Override
+            @SuppressWarnings("unchecked")
+            <T extends Service> List<T> getEnabledServicesForType(Class<T> clazz) {
+                return (List<T>) mockServices;
+            }
+        };
+        CustomExceptionHandler mockExceptionHandler = mock(CustomExceptionHandler.class);
+        when(mockExceptionHandler.isRunning()).thenReturn(true);
+        foamMain.customExceptionHandler = mockExceptionHandler;
+
+        foamMain.startCustomExceptionHandler();
+        verify(mockExceptionHandler, never()).start();
+    }
+
+    @Test
     public void testStartCustomExceptionHandlerSuccess() {
         final List<CrashReportingService> mockServices = new ArrayList<>();
         mockServices.add(new HockeyApp(null));
@@ -146,6 +168,26 @@ public class FoamMainTest {
     }
 
     @Test
+    public void testStartLogListenerAlreadyRunning() {
+        final List<LoggingService> mockServices = new ArrayList<>();
+        mockServices.add(new PaperTrail(null));
+
+        FoamMain foamMain = new FoamMain(null){
+            @Override
+            @SuppressWarnings("unchecked")
+            <T extends Service> List<T> getEnabledServicesForType(Class<T> clazz) {
+                return (List<T>) mockServices;
+            }
+        };
+        LogListener mockLogListener = mock(LogListener.class);
+        when(mockLogListener.isRunning()).thenReturn(true);
+        foamMain.logListener = mockLogListener;
+
+        foamMain.startLogListener();
+        verify(mockLogListener, never()).start();
+    }
+
+    @Test
     public void testStartLogListenerSuccess() {
         final List<LoggingService> mockServices = new ArrayList<>();
         mockServices.add(new PaperTrail(null));
@@ -176,6 +218,26 @@ public class FoamMainTest {
         foamMain.eventTracker = mockEventTracker;
 
         //No services yet, should not start
+        foamMain.startEventTracker();
+        verify(mockEventTracker, never()).start();
+    }
+
+    @Test
+    public void testStartEventTrackerAlreadyRunning() {
+        final List<EventTrackingService> mockServices = new ArrayList<>();
+        mockServices.add(new GoogleAnalytics(null));
+
+        FoamMain foamMain = new FoamMain(null){
+            @Override
+            @SuppressWarnings("unchecked")
+            <T extends Service> List<T> getEnabledServicesForType(Class<T> clazz) {
+                return (List<T>) mockServices;
+            }
+        };
+        EventTracker mockEventTracker = mock(EventTracker.class);
+        when(mockEventTracker.isRunning()).thenReturn(true);
+        foamMain.eventTracker = mockEventTracker;
+
         foamMain.startEventTracker();
         verify(mockEventTracker, never()).start();
     }
@@ -254,6 +316,40 @@ public class FoamMainTest {
         foamMain.eventTracker = mockEventTracker;
         foamMain.logEvent(null, "test_event");
         verify(mockEventTracker).trackEvent(any(Context.class), eq("test_event"));
+    }
+
+    @Test
+    public void testStart(){
+        FoamMain foamMain = mock(FoamMain.class);
+        doCallRealMethod().when(foamMain).start();
+
+        foamMain.start();
+
+        verify(foamMain).start();
+        verify(foamMain).initializeServices();
+        verify(foamMain).startCustomExceptionHandler();
+        verify(foamMain).startLogListener();
+        verify(foamMain).startEventTracker();
+        verifyNoMoreInteractions(foamMain);
+    }
+
+    @Test
+    public void testStop(){
+        FoamMain foamMain = new FoamMain(null);
+        foamMain.stop(); // Should not throw NPE's
+
+        EventTracker mockEventTracker = mock(EventTracker.class);
+        CustomExceptionHandler mockCustomExceptionHandler = mock(CustomExceptionHandler.class);
+        LogListener mockLogListener = mock(LogListener.class);
+        foamMain.eventTracker = mockEventTracker;
+        foamMain.customExceptionHandler = mockCustomExceptionHandler;
+        foamMain.logListener = mockLogListener;
+
+        foamMain.stop();
+
+        verify(mockEventTracker).stop();
+        verify(mockCustomExceptionHandler).stop();
+        verify(mockLogListener).stop();
     }
 
 }

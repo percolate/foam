@@ -57,11 +57,26 @@ class FoamMain {
     /**
      * Start up Foam!
      */
-    protected void start(){
+    void start(){
         initializeServices();
         startCustomExceptionHandler();
         startLogListener();
         startEventTracker();
+    }
+
+    /**
+     * Disable foam
+     */
+    void stop() {
+        if(eventTracker != null) {
+            eventTracker.stop();
+        }
+        if(customExceptionHandler != null) {
+            customExceptionHandler.stop();
+        }
+        if(logListener != null) {
+            logListener.stop();
+        }
     }
 
     /**
@@ -111,7 +126,9 @@ class FoamMain {
             if(customExceptionHandler == null) {
                 customExceptionHandler = new CustomExceptionHandler(context, services, foamApiKeys.wifiOnly());
             }
-            customExceptionHandler.start();
+            if(!customExceptionHandler.isRunning()) {
+                customExceptionHandler.start();
+            }
         }
     }
 
@@ -125,12 +142,14 @@ class FoamMain {
             if(logListener == null) {
                 logListener = new LogListener(context, services, foamApiKeys.wifiOnly());
             }
-            logListener.start();
+            if(!logListener.isRunning()) {
+                logListener.start();
+            }
         }
     }
 
     /**
-     * Start Foam event tracker.
+     * Start Foam event tracker.  Checks for duplicate restarts.
      * {@see EventTracker}
      */
     void startEventTracker(){
@@ -139,7 +158,9 @@ class FoamMain {
             if(eventTracker == null) {
                 eventTracker = new EventTracker(context, services, foamApiKeys.wifiOnly());
             }
-            eventTracker.start();
+            if(!eventTracker.isRunning()) {
+                eventTracker.start();
+            }
         }
     }
 
@@ -173,7 +194,7 @@ class FoamMain {
      * @param context Context
      * @param event Event name to track.
      */
-    protected void logEvent(Context context, String event){
+    void logEvent(Context context, String event){
         if(eventTracker != null) {
             eventTracker.trackEvent(context, event);
         }

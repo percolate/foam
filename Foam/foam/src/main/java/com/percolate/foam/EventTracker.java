@@ -29,11 +29,18 @@ class EventTracker {
     /* Only send events over WiFi */
     private boolean wifiOnly;
 
+    /* Callback that will be registered when service is started */
+    private Application.ActivityLifecycleCallbacks callbacks;
+
+    /* Keeps track of if <code>callbacks</code> is registered */
+    private boolean callbacksIsRegistered = false;
+
     public EventTracker(Context context, List<EventTrackingService> services, boolean wifiOnly) {
         this.context = context;
         this.utils = new Utils();
         this.services = services;
         this.wifiOnly = wifiOnly;
+        this.callbacks = createActivityLifecycleCallback();
     }
 
     /**
@@ -41,9 +48,8 @@ class EventTracker {
      */
     public void start() {
         if(context instanceof Application){
-            ((Application) context).registerActivityLifecycleCallbacks(
-                    createActivityLifecycleCallback()
-            );
+            ((Application) context).registerActivityLifecycleCallbacks(callbacks);
+            callbacksIsRegistered = true;
         } else {
             utils.logIssue("EventTracker could not start.  Context is not of type Application", null);
         }
@@ -112,6 +118,24 @@ class EventTracker {
             }
         }
         return true;
+    }
+
+    /**
+     * Stop tracking events
+     */
+    void stop(){
+        if(context instanceof Application){
+            ((Application) context).unregisterActivityLifecycleCallbacks(callbacks);
+            callbacksIsRegistered = false;
+        }
+    }
+
+    /**
+     * Used to check if this class is already running.
+     * @return true if our Application.ActivityLifecycleCallbacks is registered.
+     */
+    boolean isRunning(){
+        return callbacksIsRegistered;
     }
 
 }

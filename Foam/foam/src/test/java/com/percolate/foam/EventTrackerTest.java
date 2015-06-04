@@ -147,4 +147,15 @@ public class EventTrackerTest {
         assertFalse(eventTracker.shouldTrack(activity));
     }
 
+    @Test
+    public void testIsRunning(){
+        Application mockApplication = mock(Application.class);
+        EventTracker eventTracker = new EventTracker(mockApplication, null, false);
+        assertFalse(eventTracker.isRunning());
+        eventTracker.start();
+        assertTrue(eventTracker.isRunning());
+        eventTracker.stop();
+        assertFalse(eventTracker.isRunning());
+    }
+
 }

@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -96,6 +98,20 @@ public class LogListenerTest {
         logListener.utils = mockUtils;
         logListener.getNewLogs();
         verify(mockUtils).logIssue(eq("Error trying to read logcat output"), eq(exceptionToThrow));
+    }
+
+    @Test
+    public void testIsRunning(){
+        LogListener logListener = new LogListener(null, null, false){
+            @Override
+            protected void startMonitoringLogcat() {
+            }
+        };
+        assertFalse(logListener.isRunning());
+        logListener.start();
+        assertTrue(logListener.isRunning());
+        logListener.stop();
+        assertFalse(logListener.isRunning());
     }
 
 }
