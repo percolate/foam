@@ -55,12 +55,19 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * Change application exception handler with our own (this class).
+     * Change application exception handler to our own (this class).
      * Send any stored exceptions that were caught last time.
      */
-    public void start() {
+    void start() {
         Thread.setDefaultUncaughtExceptionHandler(this);
         sendStoredExceptions();
+    }
+
+    /**
+     * Unregister this class as the default uncaught exception handler.
+     */
+    void stop() {
+        Thread.setDefaultUncaughtExceptionHandler(defaultHandler);
     }
 
     /**
@@ -109,16 +116,19 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
      * Iterate through any stored exception files that have not been successfully sent.  Send
      * them to their corresponding service.
      */
-    public void sendStoredExceptions(){
+    void sendStoredExceptions(){
         if(!wifiOnly || utils.isOnWifi(context)) {
-            for (Map.Entry<String, StoredException> entry : getStoredExceptions().entrySet()) {
-                String fileName = entry.getKey();
-                StoredException storedException = entry.getValue();
+            Map<String, StoredException> storedExceptions = getStoredExceptions();
+            if(storedExceptions != null) {
+                for (Map.Entry<String, StoredException> entry : storedExceptions.entrySet()) {
+                    String fileName = entry.getKey();
+                    StoredException storedException = entry.getValue();
 
-                for (CrashReportingService service : services) {
-                    if (service.isEnabled()) {
-                        Callback<Object> callback = new DeleteFileCallback(context, fileName);
-                        service.logEvent(storedException, callback);
+                    for (CrashReportingService service : services) {
+                        if (service.isEnabled()) {
+                            Callback<Object> callback = new DeleteFileCallback(context, fileName);
+                            service.logEvent(storedException, callback);
+                        }
                     }
                 }
             }
@@ -129,7 +139,18 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
      * Get all stored exceptions.
      */
     Map<String, StoredException> getStoredExceptions(){
-        return exceptionPersister.loadAll();
+        if(exceptionPersister != null) {
+            return exceptionPersister.loadAll();
+        } else {
+            return null;
+        }
     }
 
+    /**
+     * Used to check if this class is already running.
+     * @return true if this class is registered as the default uncaught exception handler.
+     */
+    boolean isRunning(){
+        return Thread.getDefaultUncaughtExceptionHandler() == this;
+    }
 }

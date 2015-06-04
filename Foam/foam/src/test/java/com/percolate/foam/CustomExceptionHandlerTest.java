@@ -13,8 +13,10 @@ import java.util.Map;
 import retrofit.Callback;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -233,5 +235,15 @@ public class CustomExceptionHandlerTest {
         customExceptionHandler.exceptionPersister = mockExceptionPersister;
         customExceptionHandler.getStoredExceptions();
         verify(mockExceptionPersister).loadAll();
+    }
+
+    @Test
+    public void testIsRunning(){
+        CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler(null, null, false);
+        assertFalse(customExceptionHandler.isRunning());
+        customExceptionHandler.start();
+        assertTrue(customExceptionHandler.isRunning());
+        customExceptionHandler.stop();
+        assertFalse(customExceptionHandler.isRunning());
     }
 }

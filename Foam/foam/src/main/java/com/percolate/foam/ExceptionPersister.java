@@ -42,13 +42,15 @@ class ExceptionPersister {
     public Map<String, StoredException> loadAll(){
         Map<String, StoredException> storedExceptions = new HashMap<>();
 
-        String[] fileNames = context.fileList();
-        if(fileNames != null) {
-            for (String fileName : fileNames) {
-                if(utils.isNotBlank(fileName) && fileName.startsWith("FoamStoredException")) {
-                    StoredException storedException = loadStoredExceptionData(fileName);
-                    if(storedException != null) {
-                        storedExceptions.put(fileName, storedException);
+        if(context != null) {
+            String[] fileNames = context.fileList();
+            if (fileNames != null) {
+                for (String fileName : fileNames) {
+                    if (utils.isNotBlank(fileName) && fileName.startsWith("FoamStoredException")) {
+                        StoredException storedException = loadStoredExceptionData(fileName);
+                        if (storedException != null) {
+                            storedExceptions.put(fileName, storedException);
+                        }
                     }
                 }
             }

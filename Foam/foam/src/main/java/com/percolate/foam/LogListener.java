@@ -29,11 +29,12 @@ class LogListener {
     /**
      * Set to <code>true</code> to stop monitoring logcat output
      */
-    protected boolean stop = false;
+    protected boolean stop = true;
 
     /**
      * Frequency to check for new log messages (ms).
      */
+    @SuppressWarnings("FieldCanBeLocal")
     private int pollFrequencyMs = 5000;
 
     LogListener(Context context, List<LoggingService> services, boolean wifiOnly){
@@ -47,6 +48,7 @@ class LogListener {
      * Start monitoring logcat output
      */
     public void start(){
+        stop = false;
         startMonitoringLogcat();
     }
 
@@ -126,4 +128,19 @@ class LogListener {
         }
     }
 
+    /**
+     * Set flat to stop monitoring logcat.  The current logcat poll will complete, then
+     * monitoring will stop.
+     */
+    void stop(){
+        stop = true;
+    }
+
+    /**
+     * Used to check if this class is already running.
+     * @return true if this class not not been asked to stop yet.
+     */
+    boolean isRunning(){
+        return !stop;
+    }
 }
