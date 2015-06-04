@@ -125,4 +125,4 @@ Feel free to open a [new issue](https://github.com/percolate/foam/issues) for pl
 
 ## License
 
-Open source.  Distributed under the BSD 3 license.  See [license.txt](https://github.com/percolate/foam/blob/master/license.txt) for details.
+Open source.  Distributed under the BSD 3 license.  See [LICENSE](https://github.com/percolate/foam/blob/master/LICENSE) for details.
