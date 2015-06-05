@@ -3,5 +3,5 @@ local.properties
 .idea
 .DS_Store
 build
-foam/gradle.properties
+Foam/foam/gradle.properties
 *.iml
