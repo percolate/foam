@@ -68,7 +68,7 @@ class LogListener {
     }
 
     /**
-     * Get & process new logcat messages
+     * Get &amp; process new logcat messages
      */
     protected void processNewLogs() {
         List<String> logs = getNewLogs();
@@ -101,7 +101,7 @@ class LogListener {
     }
 
     /**
-     * Execute system <code>logcat</code> command, return the {@see Process} object.
+     * Execute system <code>logcat</code> command, return the {@link Process} object.
      * @param commandLineArgs Argument to pass to logcat
      * @return logcat Process.
      * @throws IOException If there was an IO problem reading from logcat.

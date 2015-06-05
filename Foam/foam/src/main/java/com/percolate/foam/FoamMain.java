@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Foam Main class.  Contains logic to initialize, start, and run Foam for an applicatition.
+ * Foam Main class.  Contains logic to initialize, start, and run Foam for an application.
  * This class should be started by {@link FoamApplicationInit}.
  *
  * To add new services to foam, modify {@link #init(FoamApiKeys)} to add your new service
@@ -40,6 +40,7 @@ class FoamMain {
 
     /**
      * Add all services to <code>services</code> map, with an associated ServiceType enum.
+     * @param foamApiKeys Instance of FoamApiKeys used to initialize foam services.
      */
     protected void init(FoamApiKeys foamApiKeys) {
         this.foamApiKeys = foamApiKeys;
@@ -80,7 +81,7 @@ class FoamMain {
     }
 
     /**
-     * Loop through all services.  If there is a corrisponding API key defined in FoamApiKeys,
+     * Loop through all services.  If there is a corresponding API key defined in FoamApiKeys,
      * then enable the service using that key.  Otherwise service will remain disabled.
      */
     void initializeServices() {
@@ -118,7 +119,7 @@ class FoamMain {
 
     /**
      * Start Foam custom exception handler class.
-     * {@see CustomExceptionHandler}
+     * @see CustomExceptionHandler
      */
     void startCustomExceptionHandler() {
         List<CrashReportingService> services = getEnabledServicesForType(CrashReportingService.class);
@@ -134,7 +135,7 @@ class FoamMain {
 
     /**
      * Start Foam log listener class.
-     * {@see LogListener}
+     * @see LogListener
      */
     void startLogListener() {
         List<LoggingService> services = getEnabledServicesForType(LoggingService.class);
@@ -150,7 +151,7 @@ class FoamMain {
 
     /**
      * Start Foam event tracker.  Checks for duplicate restarts.
-     * {@see EventTracker}
+     * @see EventTracker
      */
     void startEventTracker(){
         List<EventTrackingService> services = getEnabledServicesForType(EventTrackingService.class);
@@ -168,11 +169,12 @@ class FoamMain {
      * Return Service classes defined in {@link #services} that match the given interface (one of
      * Service's child interfaces).
      *
+     * @param <T> Type for the option value
      * @param clazz Interface (child of {@link Service} interface).  The returned <code>List</code>
      *              will be all Service's from our <code>services</code> map that can be cast to this
      *              interface type.
-     * @param <T> Type of List to return / filter for.
-     * @return List of <T>.  This is a list of all Services that are of the pass in interface type.
+     * @return List of type T.  This is a list of all Services that are of the pass in interface type.
+     *
      */
     @SuppressWarnings("unchecked")
     <T extends Service> List<T> getEnabledServicesForType(Class<T> clazz) {

@@ -70,6 +70,7 @@ class Flurry extends ServiceImpl implements EventTrackingService {
      * Check if the FlurryAnalytics-x.x.x.jar file is on the classpath.  This is checked before
      * the Flurry service is enabled.  If the Flurry classes cannot be found a warning will
      * be logged and the service will not be enabled.
+     * @return true if FlurryAgent was found on the classpath.
      */
     public boolean checkForJar() {
         try {

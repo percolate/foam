@@ -96,7 +96,9 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
     }
 
     /**
-     * Return `apps[].public_identifier` for app where app.bundle_identifier == <package-name>
+     * Return `apps[].public_identifier` for app where app.bundle_identifier == &lt;package-name&gt;
+     * @param appsList List of application data returned from HockeyApp.
+     * @return HockeyApp's public identifier for the current application.
      */
     protected String getAppIDFromResponse(HockeyAppsDTO appsList) {
         final String applicationPackageName = utils.getApplicationPackageName(context);
@@ -140,7 +142,7 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
 
     /**
      * Callback that executes after we send data to HockeyApp.
-     * Successful calls to HockeyApp will result in us removing the backing error & temp files.
+     * Successful calls to HockeyApp will result in us removing the backing error &amp; temp files.
      * Failed calls to HockeyApp will remove temp files, but leave error files.
      *
      * @param deleteStoredExceptionCallback Callback to remove backing error file.
@@ -174,6 +176,8 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
     /**
      * Write log file in format expected by hockey app.
      * see http://support.hockeyapp.net/kb/api/api-crashes#post-custom-crashes
+     * @param stackTrace Stack track to include the log file.
+     * @return File object containing data that can be sent to HockeyApp.
      */
     File writeHockeyAppCrashLog(String stackTrace) {
         File logFile = null;
@@ -199,7 +203,7 @@ class HockeyApp extends ServiceImpl implements CrashReportingService {
     }
 
     /**
-     * Return current date & time in format expected by HockeyApp
+     * Return current date &amp; time in format expected by HockeyApp
      * @return timestamp in HockeyApp log file format.
      */
     String getTimestamp(){

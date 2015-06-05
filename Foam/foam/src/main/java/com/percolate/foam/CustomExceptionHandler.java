@@ -107,6 +107,9 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     /**
      * Return String version of the stacktrace for a <code>Throwable</code>.
+     *
+     * @param ex Throwable to convert to a String.
+     * @return String version of the stacktrace.
      */
     String getStackTraceString(Throwable ex) {
         return Log.getStackTraceString(ex);
@@ -137,6 +140,8 @@ class CustomExceptionHandler implements Thread.UncaughtExceptionHandler {
 
     /**
      * Get all stored exceptions.
+     *
+     * @return Map containing &lt;file name, exception data&gt;.
      */
     Map<String, StoredException> getStoredExceptions(){
         if(exceptionPersister != null) {
