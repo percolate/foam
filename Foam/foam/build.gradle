@@ -34,7 +34,7 @@ task coverageReport(type: JacocoReport, dependsOn: "testDebug") {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:multidex:1.0.0'
 
     //Retrofit
@@ -55,3 +55,6 @@ dependencies {
     testCompile 'org.powermock:powermock-api-mockito:1.6.2'
 
 }
+
+apply from: 'maven_push.gradle'
+

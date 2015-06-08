@@ -15,7 +15,7 @@ import retrofit.Callback;
  * Remote syslog style logging service.
  *
  * Data is sent over UDP to an endpoint that is expecting logs in syslog format:
- * "<priority>timestamp orange_link blue_link: message"
+ * "&lt;priority&gt;timestamp orange_link blue_link: message"
  * Details: http://en.wikipedia.org/wiki/Syslog#Priority
  *
  * {@inheritDoc}
@@ -75,8 +75,12 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
 
     /**
      * Create properly formatted message to send over UDP that acts like a syslog message
-     * syslog format: "<priority>timestamp orange_link blue_link: message"
+     * syslog format: "&lt;priority&gt;timestamp orange_link blue_link: message"
      * Details: http://en.wikipedia.org/wiki/Syslog#Priority
+     * @param component Component (eg, Thread name)
+     * @param message Message to send
+     * @param callback Callback to execute after data is sent.  Can be null.  Will only be
+     *                 executed if the data is successfully sent.
      */
     protected void sendLogEvent(String component, String message, Callback<Object> callback){
         String syslogMessage = String.format(Locale.US, "<22>%s %s %s:%s",
@@ -88,7 +92,10 @@ abstract class UDPLoggingService extends ServiceImpl implements CrashReportingSe
         sendDataOverUDP(syslogMessage, callback);
     }
 
-    /** syslog style date formatter */
+    /**
+     * syslog style date formatter
+     * @return Current time in syslog format.
+     */
     protected String getSysLogFormattedDate() {
         SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss", Locale.US);
         Date now = new Date();

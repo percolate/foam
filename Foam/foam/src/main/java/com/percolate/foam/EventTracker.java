@@ -15,7 +15,7 @@ import java.util.List;
  * After {@link #start()} is called, all passed in {@link #services} classes will receive
  * a logEvent() request when new activities are viewed (on <code>onActivityResumed</code>).
  *
- * For details see {@see Application.ActivityLifecycleCallbacks} and {@see EventTrackingService}.
+ * For details see {@link Application.ActivityLifecycleCallbacks} and {@link EventTrackingService}.
  */
 class EventTracker {
 
@@ -58,6 +58,7 @@ class EventTracker {
     /**
      * Create and return a ActivityLifecycleCallbacks object that tracks all onActivityResumed
      * method calls for all activities.
+     * @return A ActivityLifecycleCallbacks object that can be registered to the application.
      */
     Application.ActivityLifecycleCallbacks createActivityLifecycleCallback() {
         return new Application.ActivityLifecycleCallbacks() {
@@ -77,6 +78,7 @@ class EventTracker {
 
     /**
      * Pass activity name to services for Activities that should be tracked.
+     * @param activity Activity that was entered that is about to be tracked.
      */
     void trackActivity(Activity activity) {
         if(shouldTrack(activity)) {
@@ -100,6 +102,7 @@ class EventTracker {
 
     /**
      * Check for classes with @FoamDontTrack annotation.
+     * @param activity Check if this activity should be tracked.
      * @return true if Activity does not have FoamDontTrack (on class on any of the methods)
      */
     boolean shouldTrack(Activity activity) {

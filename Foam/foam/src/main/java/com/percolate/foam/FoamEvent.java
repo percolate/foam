@@ -6,8 +6,7 @@ import android.content.Context;
 
 /**
  * Track custom event.
- * All services defined in your Application/FoamApiKeys setup ({@see FoamApiKeys}) will receive
- * the event.
+ * All services defined in your {@link FoamApiKeys} setup will receive the event.
  *
  * Example Usage:
  * <code>new FoamEvent().track(this, "my-custom-event")</code>
@@ -43,6 +42,9 @@ public class FoamEvent {
 
     /**
      * Track custom event
+     * @param application Application object.  Must implement {@link FoamApp}
+     * @param context Service or Activity.
+     * @param event Your custom event string.
      */
     void track(Application application, Context context, String event) {
         if(application != null && application instanceof FoamApp){

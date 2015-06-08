@@ -87,6 +87,8 @@ class GoogleAnalytics extends ServiceImpl implements EventTrackingService {
 
     /**
      * See: https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
+     * @param event Event to tack
+     * @return String of data in the format expected by google analytics.
      */
     String createPayloadData(String event){
         String payload = null;

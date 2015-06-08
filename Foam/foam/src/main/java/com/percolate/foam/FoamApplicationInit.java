@@ -20,6 +20,7 @@ class FoamApplicationInit {
 
     /**
      * Get API keys from FoamApiKeys annotation and start up our {@link FoamMain} class
+     * @return instance of FoamMain.
      */
     public FoamMain init(){
         if(application != null) {

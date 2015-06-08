@@ -7,6 +7,7 @@ public interface FoamApp {
 
     /**
      * Return stored instance of {@link FoamMain}.
+     * @return instance of {@link FoamMain}.
      */
     FoamMain getFoamMain();
 

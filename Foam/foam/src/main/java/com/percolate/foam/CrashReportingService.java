@@ -8,7 +8,7 @@ import retrofit.Callback;
 interface CrashReportingService extends Service {
 
     /**
-     * Send data from passed in {@see StoredException} object to backing service.
+     * Send data from passed in {@link StoredException} object to backing service.
      * @param storedException StoredException data.  Never null.
      * @param callback Retrofit callback.  Use {@link com.percolate.foam.NoOpCallback} if no
      *                 action is required.

@@ -72,8 +72,9 @@ That's it.  You've just enabled all of these services for your application.  Wel
         <application
             android:name="com.your.app.MyApplication"
 
-1. Dependencies for Retrofit & Gson in `build.gradle`:
+1. Add dependencies for Foam, Retrofit, and Gson in `build.gradle`:
 
+        compile 'com.percolate.foam:0.9.0'
         compile 'com.squareup.retrofit:retrofit:1.9.0'
         compile 'com.google.code.gson:gson:2.3'
 
