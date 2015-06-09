@@ -125,11 +125,11 @@ afterEvaluate { project ->
 }
 
 //Build regular jar file.  Otherwise only aar gets uploaded to maven.
-android.libraryVariants.all { variant ->
-    def name = variant.buildType.name
-    def task = project.tasks.create "jar${name.capitalize()}", Jar
-    task.dependsOn variant.javaCompile
-    task.from variant.javaCompile.destinationDir
-    task.excludes = ["**/R.class", "**/R\$*.class", "**/BuildConfig.class"]
-    artifacts.add('archives', task);
-}
+//android.libraryVariants.all { variant ->
+//    def name = variant.buildType.name
+//    def task = project.tasks.create "jar${name.capitalize()}", Jar
+//    task.dependsOn variant.javaCompile
+//    task.from variant.javaCompile.destinationDir
+//    task.excludes = ["**/R.class", "**/R\$*.class", "**/BuildConfig.class"]
+//    artifacts.add('archives', task);
+//}
